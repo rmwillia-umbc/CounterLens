@@ -63,7 +63,8 @@ const TRANSLATIONS = {
     confusionWiki: "https://en.wikipedia.org/wiki/Confusion_matrix",
     thresholdExplainer: "The threshold is the policy cutoff. A student's score is a weighted sum of attributes. Adjusting this represents changing admission standards.",
     confusionExplainer: "Compares decisions with 'hidden potential'. identifies successes and failures like 'False Negatives' (unfairly rejected).",
-    learnMore: "Wikipedia"
+    learnMore: "Wikipedia",
+    axisSwap: "Swap Axes"
   },
   zh: {
     title: "伦理实验室",
@@ -101,7 +102,8 @@ const TRANSLATIONS = {
     confusionWiki: "https://zh.wikipedia.org/wiki/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5",
     thresholdExplainer: "录取门槛是及格线。系统计算加权总分，达到门槛则录取。调高门槛代表录取标准变严。",
     confusionExplainer: "混淆矩阵对比判定结果与真实潜质。它揭示了误判录取（错误选拔）和误判拒绝（排斥人才）。",
-    learnMore: "维基百科"
+    learnMore: "维基百科",
+    axisSwap: "轴向切换"
   },
   es: {
     title: "Lab de Ética",
@@ -139,7 +141,8 @@ const TRANSLATIONS = {
     confusionWiki: "https://es.wikipedia.org/wiki/Matriz_de_confusi%C3%B3n",
     thresholdExplainer: "El umbral es el punto de corte. El puntaje se calcula sumando atributos por sus pesos.",
     confusionExplainer: "Compara decisiones con el potencial real. Identifica aciertos y errores injustos.",
-    learnMore: "Wikipedia"
+    learnMore: "Wikipedia",
+    axisSwap: "Cambiar Ejes"
   }
 };
 
@@ -203,6 +206,7 @@ const App = () => {
   const [weights, setWeights] = useState({ ...DEFAULT_WEIGHTS });
   const [selectedId, setSelectedId] = useState(0);
   const [cfProfile, setCfProfile] = useState({ ...INITIAL_POOL[0] });
+  const [swapAxes, setSwapAxes] = useState(false);
 
   const originalStudent = useMemo(() => data.find(s => s.id === selectedId) || data[0], [data, selectedId]);
 
@@ -227,12 +231,20 @@ const App = () => {
 
   const isAdmitted = (p) => calcScore(p, weights) >= threshold;
 
-  const boundaryY = useMemo(() => {
-    if (weights.sat === 0) return null;
+  const boundaryVal = useMemo(() => {
     const p = cfProfile;
-    const otherScores = (p.gpa / 4.0) * weights.gpa + (p.isAthlete ? weights.athlete : 0) + (p.isFirstGen ? weights.firstGen : 0) + (p.gender === 'Female' ? weights.gender : 0) + (p.isResident ? weights.resident : 0);
-    return (threshold - otherScores) / weights.sat * 1600;
-  }, [cfProfile, weights, threshold]);
+    if (!swapAxes) {
+      if (weights.sat === 0) return null;
+      const otherScores = (p.gpa / 4.0) * weights.gpa + (p.isAthlete ? weights.athlete : 0) + (p.isFirstGen ? weights.firstGen : 0) + (p.gender === 'Female' ? weights.gender : 0) + (p.isResident ? weights.resident : 0);
+      const val = (threshold - otherScores) / weights.sat * 1600;
+      return val >= 800 && val <= 1600 ? val : null;
+    } else {
+      if (weights.gpa === 0) return null;
+      const otherScores = (p.sat / 1600.0) * weights.sat + (p.isAthlete ? weights.athlete : 0) + (p.isFirstGen ? weights.firstGen : 0) + (p.gender === 'Female' ? weights.gender : 0) + (p.isResident ? weights.resident : 0);
+      const val = (threshold - otherScores) / weights.gpa * 4.0;
+      return val >= 2.0 && val <= 4.0 ? val : null;
+    }
+  }, [cfProfile, weights, threshold, swapAxes]);
 
   const stats = useMemo(() => {
     let tp = 0, fp = 0, tn = 0, fn = 0;
@@ -438,22 +450,29 @@ const App = () => {
           <div className="bg-[#161b22] border border-slate-800 rounded-2xl p-4 h-[42%] relative shadow-inner">
             <div className="flex flex-col mb-1">
               <div className="flex justify-between items-center">
-                <h3 className="text-[13px] font-black text-slate-500 uppercase tracking-widest">{t.visualizer}</h3>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-[13px] font-black text-slate-500 uppercase tracking-widest">{t.visualizer}</h3>
+                  <button onClick={() => setSwapAxes(!swapAxes)} className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase hover:bg-blue-500/20 transition-all">
+                    <RefreshCw className={`w-2.5 h-2.5 ${swapAxes ? 'rotate-180' : ''} transition-transform`} /> {t.axisSwap}
+                  </button>
+                </div>
                 <div className="flex gap-3 text-[11px] font-black uppercase tracking-wider">
                   <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {t.admit}</span>
                   <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-rose-500" /> {t.reject}</span>
                 </div>
               </div>
-              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-tight mt-0.5">{t.axesInfo}</p>
+              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-tight mt-0.5">
+                {!swapAxes ? t.axesInfo : (lang === 'zh' ? '横轴: SAT 分数 | 纵轴: GPA' : (lang === 'es' ? 'X: SAT | Y: GPA' : 'X: SAT SCORE | Y: GPA'))}
+              </p>
             </div>
             <div className="h-[calc(100%-20px)] w-full">
               <ResponsiveContainer>
                 <ScatterChart margin={{ top: 10, right: 20, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#21262d" vertical={false} />
-                  <XAxis type="number" dataKey="gpa" domain={[2.0, 4.0]} stroke="#484f58" fontSize={11} />
-                  <YAxis type="number" dataKey="sat" domain={[800, 1600]} stroke="#484f58" fontSize={11} />
-                  {boundaryY !== null && boundaryY >= 800 && boundaryY <= 1600 && (
-                    <ReferenceLine y={boundaryY} stroke="#3b82f6" strokeDasharray="4 4" strokeWidth={1.5} label={{ position: 'right', value: t.decisionBoundary, fill: '#3b82f6', fontSize: 9, fontWeight: '900', letterSpacing: '0.1em' }} />
+                  <XAxis type="number" dataKey={!swapAxes ? "gpa" : "sat"} domain={!swapAxes ? [2.0, 4.0] : [800, 1600]} stroke="#484f58" fontSize={11} />
+                  <YAxis type="number" dataKey={!swapAxes ? "sat" : "gpa"} domain={!swapAxes ? [800, 1600] : [2.0, 4.0]} stroke="#484f58" fontSize={11} />
+                  {boundaryVal !== null && (
+                    <ReferenceLine y={boundaryVal} stroke="#3b82f6" strokeDasharray="4 4" strokeWidth={1.5} label={{ position: 'right', value: t.decisionBoundary, fill: '#3b82f6', fontSize: 9, fontWeight: '900', letterSpacing: '0.1em' }} />
                   )}
                   <Scatter data={data} onClick={(e) => e && e.id !== undefined && setSelectedId(e.id)}>
                     {data.map((entry, index) => (
