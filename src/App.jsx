@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './index.css';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  Cell, ScatterChart, Scatter, ReferenceLine
+  Cell, ScatterChart, Scatter, ReferenceLine, LabelList
 } from 'recharts';
 import {
   Settings, GraduationCap, Target, RefreshCw, Fingerprint, ShieldAlert,
@@ -38,7 +38,7 @@ const TRANSLATIONS = {
     inspector: "Feature Inspector",
     editor: "Counterfactual Editor",
     slices: "Dataset Slices",
-    axesInfo: "X: GPA | Y: SAT SCORE",
+    axesInfo: "X: GPA | Y: SAT",
     admit: "ADMIT", reject: "REJECT",
     original: "Original Profile", whatif: "What-If Editor",
     score: "Score", fate: "Result",
@@ -47,6 +47,8 @@ const TRANSLATIONS = {
     labGuide: "Lab Guide", nextTip: "Next Task",
     normalize: "Normalize", random: "Random", reset: "Zero", default: "Default",
     creditsTitle: "Project Team & Institution",
+    leadTitle: "Principal Investigator",
+    contributorTitle: "Researcher & Developer",
     projectLead: "Prof. Rebecca Williams",
     contributor: "Eric Yang",
     datasetTribute: "Dataset Reference",
@@ -77,7 +79,7 @@ const TRANSLATIONS = {
     inspector: "特征审查 (Inspector)",
     editor: "反事实编辑 (Editor)",
     slices: "数据集切片 (Slices)",
-    axesInfo: "横轴: GPA | 纵轴: SAT 分数",
+    axesInfo: "横轴: GPA | 纵轴: SAT",
     admit: "录取", reject: "拒绝",
     original: "原始档案", whatif: "反事实编辑器",
     score: "得分", fate: "判定结果",
@@ -86,8 +88,10 @@ const TRANSLATIONS = {
     labGuide: "探究任务", nextTip: "下一项任务",
     normalize: "归一化", random: "随机", reset: "清零", default: "恢复默认",
     creditsTitle: "项目团队与机构",
-    projectLead: "首席研究员 (PI)",
-    contributor: "研究员与开发者",
+    leadTitle: "首席研究员 (PI)",
+    contributorTitle: "研究员与开发者",
+    projectLead: "Prof. Rebecca Williams",
+    contributor: "Eric Yang",
     datasetTribute: "数据集引用",
     datasetDesc: "受 1973 年加州大学伯克利分校录取数据集启发，用于探讨辛普森悖论与算法偏见。",
     department: "计算机科学与电气工程系 (CSEE)",
@@ -125,8 +129,10 @@ const TRANSLATIONS = {
     labGuide: "Guía Lab", nextTip: "Siguiente",
     normalize: "Normalizar", random: "Azar", reset: "Cero", default: "Defecto",
     creditsTitle: "Equipo e Institución",
-    projectLead: "Investigador Principal",
-    contributor: "Investigador y Desarrollador",
+    leadTitle: "Investigador Principal",
+    contributorTitle: "Investigador y Desarrollador",
+    projectLead: "Prof. Rebecca Williams",
+    contributor: "Eric Yang",
     datasetTribute: "Referencia de Datos",
     datasetDesc: "Inspirado en el conjunto de datos de admisiones de UC Berkeley 1973.",
     department: "Depto. de Ciencias (CSEE)",
@@ -258,14 +264,20 @@ const App = () => {
       if (s.gender === 'Male') { groups.male.c++; if (pred) groups.male.a++; }
       if (s.isResident) { groups.resident.c++; if (pred) groups.resident.a++; }
     });
+    const total = data.length || 1;
     return {
-      tp, fp, tn, fn, accuracy: (((tp + tn) / data.length) * 100).toFixed(1),
+      tp, fp, tn, fn,
+      accuracy: (((tp + tn) / total) * 100).toFixed(1),
+      tpRate: Math.round((tp / total) * 100),
+      fpRate: Math.round((fp / total) * 100),
+      fnRate: Math.round((fn / total) * 100),
+      tnRate: Math.round((tn / total) * 100),
       groupStats: [
-        { name: t.athlete, rate: Math.round(groups.athlete.a / groups.athlete.c * 100) || 0 },
-        { name: t.firstGen, rate: Math.round(groups.firstGen.a / groups.firstGen.c * 100) || 0 },
-        { name: lang === 'zh' ? '女性' : (lang === 'es' ? 'FEM' : 'Female'), rate: Math.round(groups.female.a / groups.female.c * 100) || 0 },
-        { name: lang === 'zh' ? '男性' : (lang === 'es' ? 'MASC' : 'Male'), rate: Math.round(groups.male.a / groups.male.c * 100) || 0 },
-        { name: t.resident, rate: Math.round(groups.resident.a / groups.resident.c * 100) || 0 }
+        { name: t.athlete, rate: Math.round(groups.athlete.a / groups.athlete.c * 100) || 0, count: groups.athlete.c },
+        { name: t.firstGen, rate: Math.round(groups.firstGen.a / groups.firstGen.c * 100) || 0, count: groups.firstGen.c },
+        { name: lang === 'zh' ? '女性' : (lang === 'es' ? 'FEM' : 'Female'), rate: Math.round(groups.female.a / groups.female.c * 100) || 0, count: groups.female.c },
+        { name: lang === 'zh' ? '男性' : (lang === 'es' ? 'MASC' : 'Male'), rate: Math.round(groups.male.a / groups.male.c * 100) || 0, count: groups.male.c },
+        { name: t.resident, rate: Math.round(groups.resident.a / groups.resident.c * 100) || 0, count: groups.resident.c }
       ]
     };
   }, [data, weights, threshold, t, lang]);
@@ -311,14 +323,14 @@ const App = () => {
                   <div className="p-4 bg-slate-800/40 rounded-2xl border border-slate-700/50 flex items-center gap-3">
                     <User className="w-5 h-5 text-blue-400" />
                     <div className="text-left">
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-none mb-1">Principal Investigator</p>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-none mb-1">{t.leadTitle}</p>
                       <p className="text-sm font-bold text-slate-200">{t.projectLead}</p>
                     </div>
                   </div>
                   <div className="p-4 bg-slate-800/40 rounded-2xl border border-slate-700/50 flex items-center gap-3">
                     <ShieldAlert className="w-5 h-5 text-purple-400" />
                     <div className="text-left">
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-none mb-1">Researcher & Developer</p>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-none mb-1">{t.contributorTitle}</p>
                       <p className="text-sm font-bold text-slate-200">{t.contributor}</p>
                     </div>
                   </div>
@@ -404,7 +416,14 @@ const App = () => {
                     <span>{t.threshold}</span>
                     <button onClick={() => setExplainer('threshold')} className="text-slate-600 hover:text-blue-400 transition-colors"><HelpCircle className="w-3 h-3" /></button>
                   </div>
-                  <span className="text-blue-500 font-black text-sm">{threshold}</span>
+                  <div className="flex flex-col items-end">
+                    <span className="text-blue-500 font-black text-sm leading-none">{threshold}</span>
+                    {boundaryVal !== null && (
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-tighter mt-0.5">
+                        {!swapAxes ? `Cutoff: SAT ≈ ${Math.round(boundaryVal)}` : `Cutoff: GPA ≈ ${boundaryVal.toFixed(2)}`}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <input type="range" min="30" max="95" value={threshold} onChange={(e) => setThreshold(parseInt(e.target.value))} className="w-full h-1 bg-slate-800 rounded-full accent-blue-500 cursor-pointer" />
               </div>
@@ -462,7 +481,7 @@ const App = () => {
                 </div>
               </div>
               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-tight mt-0.5">
-                {!swapAxes ? t.axesInfo : (lang === 'zh' ? '横轴: SAT 分数 | 纵轴: GPA' : (lang === 'es' ? 'X: SAT | Y: GPA' : 'X: SAT SCORE | Y: GPA'))}
+                {!swapAxes ? t.axesInfo : (lang === 'zh' ? '横轴: SAT | 纵轴: GPA' : (lang === 'es' ? 'X: SAT | Y: GPA' : 'X: SAT | Y: GPA'))}
               </p>
             </div>
             <div className="h-[calc(100%-20px)] w-full">
@@ -556,12 +575,49 @@ const App = () => {
             <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
               <h2 className="text-[13px] font-black uppercase text-slate-500 tracking-widest flex items-center gap-2"><BarChart3 className="w-3 h-3 text-purple-500" /> {t.slices}</h2>
             </div>
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0 relative">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.groupStats} layout="vertical" margin={{ left: -5, right: 15 }}>
+                <BarChart data={stats.groupStats} layout="vertical" margin={{ left: -5, right: 100, top: 10, bottom: 10 }}>
                   <XAxis type="number" hide domain={[0, 100]} />
                   <YAxis dataKey="name" type="category" stroke="#484f58" fontSize={10} width={55} />
-                  <Bar dataKey="rate" radius={[0, 2, 2, 0]} fill={COLORS.barDefault} />
+                  <Bar dataKey="rate" radius={[0, 2, 2, 0]} fill={COLORS.barDefault}>
+                    {stats.groupStats.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS.barDefault} />
+                    ))}
+                    <LabelList
+                      dataKey="rate"
+                      position="right"
+                      content={(props) => {
+                        const { x, y, width, height, value, index } = props;
+                        const count = stats.groupStats[index].count;
+                        return (
+                          <text
+                            x={x + width + 8}
+                            y={y + height / 2 + 4}
+                            className="font-sans font-black uppercase"
+                          >
+                            <tspan fill="#60a5fa" fontSize="10">{value}%</tspan>
+                            <tspan fill="#475569" fontSize="9" fontWeight="bold"> (n={count})</tspan>
+                          </text>
+                        );
+                      }}
+                    />
+                  </Bar>
+                  <Tooltip
+                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-[#1c2128] border border-slate-700 p-2 rounded shadow-xl text-[10px] font-bold">
+                            <p className="text-slate-200">{payload[0].payload.name}</p>
+                            <p className="text-blue-400">{t.admit}: {payload[0].value}%</p>
+                            <p className="text-slate-400">Total Samples: {payload[0].payload.count}</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -571,10 +627,22 @@ const App = () => {
                 <button onClick={() => setExplainer('confusion')} className="text-slate-600 hover:text-blue-400 transition-colors"><HelpCircle className="w-3 h-3" /></button>
               </div>
               <div className="grid grid-cols-2 gap-1 text-center font-mono">
-                {[{ l: 'TP', v: stats.tp, c: 'emerald' }, { l: 'FP', v: stats.fp, c: 'amber' }, { l: 'FN', v: stats.fn, c: 'rose' }, { l: 'TN', v: stats.tn, c: 'slate' }].map(m => (
-                  <div key={m.l} className={`bg-${m.c}-500/5 p-1 rounded border border-${m.c}-500/10 shadow-sm`}>
-                    <p className={`text-[10px] text-${m.c}-500 uppercase font-black leading-none mb-1`}>{m.l}</p>
-                    <p className={`text-xs font-black text-${m.c}-400 leading-none`}>{m.v}</p>
+                {[
+                  { l: 'TP', v: stats.tp, r: stats.tpRate, c: 'emerald', rgb: '16, 185, 129' },
+                  { l: 'FP', v: stats.fp, r: stats.fpRate, c: 'amber', rgb: '245, 158, 11' },
+                  { l: 'FN', v: stats.fn, r: stats.fnRate, c: 'rose', rgb: '239, 68, 68' },
+                  { l: 'TN', v: stats.tn, r: stats.tnRate, c: 'slate', rgb: '71, 85, 105' }
+                ].map(m => (
+                  <div
+                    key={m.l}
+                    className={`p-1 rounded border border-${m.c}-500/20 shadow-sm transition-all duration-500`}
+                    style={{ backgroundColor: `rgba(${m.rgb}, ${Math.max(0.05, m.r / 100)})` }}
+                  >
+                    <p className={`text-[10px] text-${m.c}-400 uppercase font-black leading-none mb-1`}>{m.l}</p>
+                    <div className="flex flex-col gap-0.5">
+                      <p className="text-sm font-black text-white leading-none">{m.v}</p>
+                      <p className={`text-[9px] font-bold text-${m.c}-300/80 leading-none`}>{m.r}%</p>
+                    </div>
                   </div>
                 ))}
               </div>
