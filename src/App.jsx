@@ -382,7 +382,7 @@ const App = () => {
         <div className="flex items-center gap-3">
           <GraduationCap className="w-6 h-6 text-blue-500" />
           <h1 className="text-lg font-black text-white uppercase tracking-tight">{t.title}</h1>
-          <span className="text-[13px] text-slate-600 font-bold border-l border-slate-800 pl-3 uppercase tracking-widest">V2.1 LAB</span>
+          <span className="text-[13px] text-slate-600 font-bold border-l border-slate-800 pl-3 uppercase tracking-widest">V2.1</span>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => setShowCredits(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-[#161b22] border border-slate-800 text-slate-400 hover:text-blue-400 transition-all"><Info className="w-3.5 h-3.5" /> {t.aboutBtn}</button>
