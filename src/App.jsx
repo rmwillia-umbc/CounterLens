@@ -58,13 +58,20 @@ const TRANSLATIONS = {
     university: "University of Maryland, Baltimore County (UMBC)",
     visitLab: "Visit Lab Site", visitDept: "Department Website",
     aboutBtn: "Credits", decisionBoundary: "Decision Boundary",
-    ethicsAlert: "Ethics Alert",
+    ethicsAlert: "Ethics Scanner",
     ethicsDesc: "High accuracy can sometimes mask systematic exclusion of minorities.",
+    ethAccuracy: "Accuracy Paradox: High precision might be codifying historical biases.",
+    ethBalance: "Weight Imbalance: Over-reliance on a single metric ignores holistic potential.",
+    ethDisparity: "Disparity Detected: Current weights create significant group inequality.",
+    ethThreshold: "Extreme Standard: This cutoff may lead to mass exclusion or zero selection.",
+    ethNeutral: "Balance Mode: Model appears stable, but always watch the 'False Negatives'.",
     yes: "YES", no: "NO", male: "MALE", female: "FEMALE", nonbinary: "NON-BINARY",
     thresholdWiki: "https://en.wikipedia.org/wiki/Threshold_level",
     confusionWiki: "https://en.wikipedia.org/wiki/Confusion_matrix",
     thresholdExplainer: "The threshold is the policy cutoff. A student's score is a weighted sum of attributes. Adjusting this represents changing admission standards.",
     confusionExplainer: "Compares decisions with 'hidden potential'. identifies successes and failures like 'False Negatives' (unfairly rejected).",
+    scannerExplainer: "The Scanner continuously audits your model for algorithmic bias and systemic risks. It monitors the 'Accuracy Paradox', weight imbalances, and demographic disparities to ensure fairness.",
+    scannerWiki: "https://en.wikipedia.org/wiki/Algorithmic_bias",
     learnMore: "Wikipedia",
     axisSwap: "Swap Axes"
   },
@@ -99,13 +106,20 @@ const TRANSLATIONS = {
     university: "马里兰大学巴尔德摩县分校 (UMBC)",
     visitLab: "访问实验室主页", visitDept: "访问系部官网",
     aboutBtn: "关于项目", decisionBoundary: "录取分界线",
-    ethicsAlert: "伦理警示",
+    ethicsAlert: "伦理诊断扫描仪",
     ethicsDesc: "高准确度有时会以牺牲少数群体的代表性为代价。",
+    ethAccuracy: "准确度悖论：过高的准确度可能正在固化历史上的系统性偏见。",
+    ethBalance: "权重失衡：过度依赖单一指标会忽略对学生全方位潜能的评估。",
+    ethDisparity: "监测到录取不公：当前的权重配置导致了明显的群体间不平等。",
+    ethThreshold: "极端录取标准：当前的门槛可能导致大规模人才排斥或盲目准入。",
+    ethNeutral: "平衡观察中：当前模型相对稳定，但请持续关注‘误判拒绝’案例。",
     yes: "是", no: "否", male: "男性", female: "女性", nonbinary: "非二元",
     thresholdWiki: "https://zh.wikipedia.org/wiki/%E9%98%88%E5%80%BC",
     confusionWiki: "https://zh.wikipedia.org/wiki/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5",
     thresholdExplainer: "录取门槛是及格线。系统计算加权总分，达到门槛则录取。调高门槛代表录取标准变严。",
     confusionExplainer: "混淆矩阵对比判定结果与真实潜质。它揭示了误判录取（错误选拔）和误判拒绝（排斥人才）。",
+    scannerExplainer: "伦理扫描仪实时审计模型的算法偏见与系统性风险。它会持续监控‘准确度悖论’、‘权重失衡’、‘群体不公’等核心指标，并提供实时诊断反馈。",
+    scannerWiki: "https://zh.wikipedia.org/wiki/%E7%AE%97%E6%B3%95%E5%81%8F%E8%A7%81",
     learnMore: "维基百科",
     axisSwap: "轴向切换"
   },
@@ -140,13 +154,20 @@ const TRANSLATIONS = {
     university: "UMBC",
     visitLab: "Visitar Lab", visitDept: "Visitar Depto.",
     aboutBtn: "Créditos", decisionBoundary: "Límite",
-    ethicsAlert: "Alerta Ética",
+    ethicsAlert: "Escáner Ético",
     ethicsDesc: "La alta precisión puede ocultar la exclusión de minorías.",
+    ethAccuracy: "Paradoja de Precisión: La alta fidelidad puede estar codificando sesgos.",
+    ethBalance: "Desequilibrio: La dependencia de una métrica ignora el potencial holístico.",
+    ethDisparity: "Desigualdad Detectada: Los pesos crean una brecha grupal significativa.",
+    ethThreshold: "Estándar Extremo: Este límite puede causar una exclusión masiva.",
+    ethNeutral: "Modo de Equilibrio: Modelo estable, pero vigile los 'Falsos Negativos'.",
     yes: "SÍ", no: "NO", male: "MASC", female: "FEM", nonbinary: "NO-BIN",
     thresholdWiki: "https://es.wikipedia.org/wiki/Umbral",
     confusionWiki: "https://es.wikipedia.org/wiki/Matriz_de_confusi%C3%B3n",
     thresholdExplainer: "El umbral es el punto de corte. El puntaje se calcula sumando atributos por sus pesos.",
     confusionExplainer: "Compara decisiones con el potencial real. Identifica aciertos y errores injustos.",
+    scannerExplainer: "El Escáner audita continuamente el modelo en busca de sesgos algorítmicos. Monitorea paradojas de precisión, desequilibrio de pesos y desigualdades demográficas para garantizar la equidad.",
+    scannerWiki: "https://es.wikipedia.org/wiki/Sesgo_algor%C3%ADtmico",
     learnMore: "Wikipedia",
     axisSwap: "Cambiar Ejes"
   }
@@ -154,31 +175,34 @@ const TRANSLATIONS = {
 
 const LAB_TIPS = {
   en: [
-    "Select a 'Rejected' student and increase their GPA. Does their fate change?",
-    "Increase 'Athlete' weight. Observe how the decision boundary line drops significantly.",
+    "Select a 'Rejected' student and use 'Editor'. Look at the yellow path as they cross the boundary!",
+    "Click 'FP' in the matrix. High-accuracy models often hide these unfair admissions.",
+    "Enable 'Mine Edge Cases'. Notice how tiny score changes toggle their fate.",
+    "Click the '1st-Gen' bar. Are these students closer to the rejection zone?",
+    "Increase 'SAT' weight. Watch the pulse of edge-case students shift.",
+    "Swap Axes. Does the admission pattern look different from this perspective?",
     "Try to achieve 90% accuracy. Does this configuration harm first-gen students?",
-    "Set SAT weight to 0. Is this a more equitable model for lower-income groups?",
-    "Identify a 'False Negative'. Why was this talented student rejected?",
-    "Notice the gap between 'Male' and 'Female' rates. Is there bias?",
-    "Give 'Resident' a 30% weight. How does this affect diversity?"
+    "Set SAT weight to 0. Is this a more equitable model for lower-income groups?"
   ],
   zh: [
-    "选中一名“拒绝”状态的学生并将其 GPA 提高。命运改变了吗？",
-    "提高“运动员”权重。观察散点图中的分界线是如何下降的。",
+    "选中一名“拒绝”学生并使用编辑器。观察跨越分界线时的金色人生轨迹！",
+    "点击矩阵中的'FP'。高准确度的模型往往隐藏了这些不公平的录取。",
+    "点击'挖掘疑难样本'。观察微小的分值变化如何剧烈改变边缘学生的命运。",
+    "点击切片中的'一代生'。这些学生是否普遍更接近拒绝区域？",
+    "大幅调高 SAT 权重。观察由于权重变化导致的‘疑难案例’脉冲闪烁。",
+    "切换 X/Y 轴。从不同的维度看，录取模式是否有显著差异？",
     "尝试达到 90% 的准确度。这个配置是否损害了一代生的利益？",
-    "将 SAT 权重设为 0。这对于低收入群体是否是一个更公平的模型？",
-    "在矩阵中寻找一个“误判拒绝”。思考原因。",
-    "对比“男性”和“女性”的录取率。是否存在性别偏见？",
-    "给“本州居民” 30% 的权重。观察对多样性的影响。"
+    "将 SAT 权重设为 0。这对于低收入群体是否是一个更公平的模型？"
   ],
   es: [
-    "Selecciona un estudiante rechazado y sube su GPA. ¿Cambia su destino?",
-    "Aumenta el peso de 'Atleta'. Observa cómo baja la línea de decisión.",
+    "Selecciona un estudiante rechazado. ¡Mira la trayectoria dorada al cruzar el límite!",
+    "Haz clic en 'FP' en la matriz. Los modelos precisos suelen ocultar admisiones injustas.",
+    "Activa 'Minería de Casos'. Observa cómo cambios mínimos alteran su destino.",
+    "Haz clic en '1ra Gen'. ¿Están estos estudiantes más cerca de la zona de rechazo?",
+    "Aumenta el peso del SAT. Observa cómo parpadean los casos críticos al cambiar pesos.",
+    "Cambiar Ejes. ¿Se ve diferente el patrón de admisión desde esta perspectiva?",
     "Intenta llegar al 90% de precisión. ¿Afecta a las minorías?",
-    "Pon el peso del SAT en 0. ¿Es este un modelo más equitativo?",
-    "Busca un 'Falso Negativo' in the matrix.",
-    "Compara las tasas entre hombres y mujeres.",
-    "Dale un peso del 30% a 'Residente'."
+    "Pon el peso del SAT en 0. ¿Es este un modelo más equitativo?"
   ]
 };
 
@@ -214,6 +238,7 @@ const App = () => {
   const [cfProfile, setCfProfile] = useState({ ...INITIAL_POOL[0] });
   const [swapAxes, setSwapAxes] = useState(false);
   const [filterMode, setFilterMode] = useState(null); // { type: 'confusion'|'slice', value: string }
+  const [isMining, setIsMining] = useState(false);
 
   const originalStudent = useMemo(() => data.find(s => s.id === selectedId) || data[0], [data, selectedId]);
 
@@ -283,7 +308,47 @@ const App = () => {
     };
   }, [data, weights, threshold, t, lang]);
 
+  const trajectoryData = useMemo(() => {
+    if (!originalStudent || !cfProfile) return [];
+    // Ensure we provide keys matching the chart's dataKey logic
+    return [
+      { id: 'orig', gpa: originalStudent.gpa, sat: originalStudent.sat, isOrig: true },
+      { id: 'cf', gpa: cfProfile.gpa, sat: cfProfile.sat, isOrig: false }
+    ];
+  }, [originalStudent, cfProfile]);
+
+  const isCrossed = useMemo(() => {
+    return isAdmitted(originalStudent) !== isAdmitted(cfProfile);
+  }, [originalStudent, cfProfile, weights, threshold]);
+
+  const hardSamples = useMemo(() => {
+    if (!isMining) return [];
+    return data
+      .map(s => ({ ...s, dist: Math.abs(calcScore(s, weights) - threshold) }))
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 8);
+  }, [data, weights, threshold, isMining]);
+
   const handleCfChange = (f, v) => setCfProfile(p => ({ ...p, [f]: v }));
+
+  const dynamicAlert = useMemo(() => {
+    // 1. Accuracy Check
+    if (stats.accuracy > 85) return t.ethAccuracy;
+
+    // 2. Disparity Check (Max vs Min rate difference)
+    const rates = stats.groupStats.map(g => g.rate);
+    const maxDiff = Math.max(...rates) - Math.min(...rates);
+    if (maxDiff > 25) return t.ethDisparity;
+
+    // 3. Weight Concentration Check
+    const maxWeight = Math.max(...Object.values(weights));
+    if (maxWeight > 60) return t.ethBalance;
+
+    // 4. Threshold Extremes
+    if (threshold > 85 || threshold < 35) return t.ethThreshold;
+
+    return t.ethNeutral;
+  }, [stats, weights, threshold, t]);
 
   const handleWeights = (action) => {
     let newWeights = { ...weights };
@@ -361,15 +426,17 @@ const App = () => {
               <div className="flex flex-col space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400"><BookOpen className="w-6 h-6" /></div>
-                  <h3 className="text-xl font-black text-white uppercase tracking-tight">{explainer === 'threshold' ? t.threshold : t.confusion}</h3>
+                  <h3 className="text-xl font-black text-white uppercase tracking-tight">
+                    {explainer === 'threshold' ? t.threshold : explainer === 'confusion' ? t.confusion : t.ethicsAlert}
+                  </h3>
                 </div>
                 <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
                   <p className="text-slate-300 text-sm font-medium leading-relaxed">
-                    {explainer === 'threshold' ? t.thresholdExplainer : t.confusionExplainer}
+                    {explainer === 'threshold' ? t.thresholdExplainer : explainer === 'confusion' ? t.confusionExplainer : t.scannerExplainer}
                   </p>
                 </div>
                 <div className="pt-2 flex justify-between items-center">
-                  <a href={explainer === 'threshold' ? t.thresholdWiki : t.confusionWiki} target="_blank" className="flex items-center gap-2 text-xs font-bold text-blue-400 hover:underline"><ExternalLink className="w-4 h-4" /> {t.learnMore}</a>
+                  <a href={explainer === 'threshold' ? t.thresholdWiki : explainer === 'confusion' ? t.confusionWiki : t.scannerWiki} target="_blank" className="flex items-center gap-2 text-xs font-bold text-blue-400 hover:underline"><ExternalLink className="w-4 h-4" /> {t.learnMore}</a>
                   <button onClick={() => setExplainer(null)} className="px-8 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-black uppercase transition-all">OK</button>
                 </div>
               </div>
@@ -477,6 +544,9 @@ const App = () => {
                   <button onClick={() => setSwapAxes(!swapAxes)} className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase hover:bg-blue-500/20 transition-all">
                     <RefreshCw className={`w-2.5 h-2.5 ${swapAxes ? 'rotate-180' : ''} transition-transform`} /> {t.axisSwap}
                   </button>
+                  <button onClick={() => setIsMining(!isMining)} className={`flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] font-black uppercase transition-all ${isMining ? 'bg-amber-500 border-amber-400 text-white shadow-lg shadow-amber-500/20' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500'}`}>
+                    <Target className={`w-2.5 h-2.5 ${isMining ? 'animate-spin-slow' : ''}`} /> {lang === 'zh' ? '挖掘疑难样本' : (lang === 'es' ? 'Minería' : 'Mine Edge Cases')}
+                  </button>
                 </div>
                 <div className="flex gap-3 text-[11px] font-black uppercase tracking-wider">
                   <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {t.admit}</span>
@@ -502,6 +572,7 @@ const App = () => {
                   >
                     {data.map((entry, index) => {
                       const pred = isAdmitted(entry);
+                      const isHard = hardSamples.some(h => h.id === entry.id);
                       let isMatch = true;
                       if (filterMode) {
                         if (filterMode.type === 'confusion') {
@@ -520,13 +591,41 @@ const App = () => {
                         <Cell
                           key={index}
                           fill={pred ? COLORS.admit : COLORS.reject}
-                          stroke={selectedId === entry.id ? 'white' : 'transparent'}
-                          strokeWidth={2}
+                          stroke={selectedId === entry.id ? 'white' : (isHard ? '#fbbf24' : 'transparent')}
+                          strokeWidth={isHard || selectedId === entry.id ? 2 : 1}
                           opacity={isMatch ? 1 : 0.15}
-                          style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+                          className={isHard ? 'animate-pulse' : ''}
+                          style={{
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            filter: isHard ? 'drop-shadow(0 0 4px rgba(251, 191, 36, 0.8))' : 'none'
+                          }}
                         />
                       );
                     })}
+                  </Scatter>
+
+                  {/* Trajectory Line */}
+                  <Scatter
+                    data={trajectoryData}
+                    line={{
+                      stroke: isCrossed ? '#fbbf24' : '#3b82f6',
+                      strokeWidth: 2,
+                      strokeDasharray: '5 5',
+                      filter: isCrossed ? 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))' : 'none'
+                    }}
+                    shape={() => null}
+                  />
+
+                  {/* Current What-If Point (Larger/Glowing) */}
+                  <Scatter data={[trajectoryData[1]]}>
+                    <Cell
+                      fill={isAdmitted(cfProfile) ? COLORS.admit : COLORS.reject}
+                      stroke="white"
+                      strokeWidth={3}
+                      className={isCrossed ? 'animate-pulse' : ''}
+                      style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.4))' }}
+                    />
                   </Scatter>
                 </ScatterChart>
               </ResponsiveContainer>
@@ -702,12 +801,15 @@ const App = () => {
             </div>
           </div>
           {/* Ethics Alert fixed height h-24 */}
-          <div className="bg-[#1c2128] border border-slate-800 rounded-2xl p-4 shadow-lg border-l-4 border-l-amber-500 h-28 flex-shrink-0 flex flex-col justify-center">
-            <div className="flex items-center gap-2 text-amber-500 mb-1">
-              <ShieldAlert className="w-3 h-3" />
-              <p className="text-xs font-black uppercase tracking-widest">{t.ethicsAlert}</p>
+          <div className={`bg-[#1c2128] border border-slate-800 rounded-2xl p-4 shadow-lg border-l-4 h-28 flex-shrink-0 flex flex-col justify-center transition-all duration-500 ${dynamicAlert === t.ethNeutral ? 'border-l-blue-500' : 'border-l-amber-500'}`}>
+            <div className={`flex items-center justify-between mb-1`}>
+              <div className={`flex items-center gap-2 ${dynamicAlert === t.ethNeutral ? 'text-blue-400' : 'text-amber-500'}`}>
+                <ShieldAlert className="w-3 h-3" />
+                <p className="text-xs font-black uppercase tracking-widest">{t.ethicsAlert}</p>
+              </div>
+              <button onClick={() => setExplainer('scanner')} className="text-slate-600 hover:text-blue-400 transition-colors"><HelpCircle className="w-3 h-3" /></button>
             </div>
-            <p className="text-[13px] text-slate-500 leading-tight italic font-medium">{t.ethicsDesc}</p>
+            <p className={`text-[13px] leading-tight italic font-medium transition-colors duration-500 ${dynamicAlert === t.ethNeutral ? 'text-slate-400' : 'text-slate-300'}`}>{dynamicAlert}</p>
           </div>
         </section>
 
