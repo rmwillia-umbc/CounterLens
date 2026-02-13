@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import {
   Settings, GraduationCap, Target, RefreshCw, Fingerprint, ShieldAlert,
-  HelpCircle, Info, Globe, User, ExternalLink, X, ChevronRight, School, Database, BookOpen, BarChart3, Activity
+  HelpCircle, Info, Globe, User, ExternalLink, X, ChevronRight, School, Database, BookOpen, BarChart3, Activity, Scale
 } from 'lucide-react';
 
 /**
@@ -463,10 +463,18 @@ const App = () => {
 
       {/* Header */}
       <header className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <GraduationCap className="w-6 h-6 text-blue-500" />
-          <h1 className="text-lg font-black text-white uppercase tracking-tight">{t.title}</h1>
-          <span className="text-[13px] text-slate-600 font-bold border-l border-slate-800 pl-3 uppercase tracking-widest">V2.1</span>
+        <div className="flex items-center gap-4">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-amber-500/20 blur-lg rounded-full"></div>
+            <Scale className="w-7 h-7 text-amber-500 relative z-10 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">{t.title}</h1>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
+              <span className="text-[10px] text-slate-600 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.1</span>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => setShowCredits(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-[#161b22] border border-slate-800 text-slate-400 hover:text-blue-400 transition-all"><Info className="w-3.5 h-3.5" /> {t.aboutBtn}</button>
