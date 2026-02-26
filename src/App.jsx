@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 /**
- * AI/ML Ethics Lab - Berkeley Admission Simulator V2.1
+ * AI/ML Ethics Lab - Berkeley Admission Simulator V2.2
  * * Final Polish:
  * 1. Fixed rendering bug (ensured default export).
  * 2. Pixel-Perfect Horizon Alignment: Footers (Lab Guide, Results, Ethics Alert) aligned at h-24.
@@ -241,8 +241,8 @@ const generateData = () => {
     const isAthlete = Math.random() > 0.88;
     const isFirstGen = Math.random() > 0.75;
     const isResident = Math.random() > 0.4;
-    // Force balanced gender for better math clarity
-    const gender = i % 2 === 0 ? 'Female' : 'Male';
+    // Allow natural data imbalance for educational exploration
+    const gender = Math.random() > 0.45 ? 'Female' : 'Male';
     const latentPotential = (gpa * 18) + (sat / 1600 * 20) + (Math.random() * 15);
     const actualLabel = latentPotential > 72;
     data.push({ id: i, gpa, sat, isAthlete, isFirstGen, isResident, gender, label: actualLabel, x: gpa, y: sat });
@@ -481,10 +481,7 @@ const App = () => {
       {/* Overlay Modals */}
       {(showCredits || explainer) && (
         <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-          <div className={`bg-[#161b22] border border-slate-700 w-full max-w-xl rounded-3xl p-8 shadow-2xl relative ${glassMode ? 'glass-card' : ''}`}>
-            <button onClick={() => { setShowCredits(false); setExplainer(null); }} className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white transition-colors">
-              <X className="w-5 h-5" />
-            </button>
+          <div className={`bg-[#161b22] border border-slate-700 w-full max-w-xl rounded-3xl pt-6 px-8 pb-8 shadow-2xl relative ${glassMode ? 'glass-card' : ''}`}>
 
             {showCredits && (
               <div className="flex flex-col items-center text-center space-y-6">
@@ -523,6 +520,9 @@ const App = () => {
                     <a href="https://sites.google.com/umbc.edu/prof-rebecca-williams/" target="_blank" className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[13px] font-bold transition-all"><ExternalLink className="w-3 h-3" /> {t.visitLab}</a>
                     <a href="https://www.csee.umbc.edu/" target="_blank" className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-[13px] font-bold transition-all"><Globe className="w-3 h-3" /> {t.visitDept}</a>
                   </div>
+                  <div className="pt-2 flex justify-end">
+                    <button onClick={() => setShowCredits(false)} className="px-8 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-black uppercase transition-all btn-tactile btn-primary-tactile">OK</button>
+                  </div>
                 </div>
               </div>
             )}
@@ -560,7 +560,7 @@ const App = () => {
                           explainer === 'inspector' ? t.inspectorWiki :
                             explainer === 'editor' ? t.editorWiki :
                               t.scannerWiki} target="_blank" className="flex items-center gap-2 text-xs font-bold text-blue-400 hover:underline"><ExternalLink className="w-4 h-4" /> {t.learnMore}</a>
-                  <button onClick={() => setExplainer(null)} className="px-8 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-black uppercase transition-all">OK</button>
+                  <button onClick={() => setExplainer(null)} className="px-8 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-black uppercase transition-all btn-tactile btn-primary-tactile">OK</button>
                 </div>
               </div>
             )}
@@ -579,14 +579,14 @@ const App = () => {
             <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">{t.title}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
-              <span className="text-[10px] text-slate-400 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.1</span>
+              <span className="text-[10px] text-slate-400 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.2</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setGlassMode(!glassMode)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all duration-500 ${glassMode ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] border-transparent' : 'bg-[#161b22] border border-slate-800 text-slate-400 hover:text-indigo-400'}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all duration-500 btn-tactile ${glassMode ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] border-transparent' : 'bg-[#161b22] border border-slate-800 text-slate-400 hover:text-indigo-400'}`}
           >
             <Sparkles className={`w-3 h-3 ${glassMode ? 'animate-pulse' : ''}`} />
             {lang === 'zh' ? '毛玻璃' : (lang === 'es' ? 'CRISTAL' : 'GLASS')}
@@ -594,7 +594,9 @@ const App = () => {
           <button onClick={() => setShowCredits(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-[#161b22] border border-slate-800 text-slate-400 hover:text-blue-400 transition-all btn-tactile"><Info className="w-3.5 h-3.5" /> {t.aboutBtn}</button>
           <div className="flex bg-[#161b22] rounded-lg p-0.5 border border-slate-800">
             {['en', 'zh', 'es'].map(l => (
-              <button key={l} onClick={() => setLang(l)} className={`px-2 py-1 rounded text-xs font-black uppercase ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-500'}`}>{l}</button>
+              <button key={l} onClick={() => setLang(l)} className={`px-2 py-1 rounded text-xs font-black uppercase transition-all btn-tactile ${lang === l ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-white'}`}>
+                {l}
+              </button>
             ))}
           </div>
           <div className={`${glassMode ? 'bg-white/5 border-white/10' : 'bg-slate-900 border-slate-800'} px-4 py-1 rounded-xl border flex items-center gap-3 transition-colors`}>
@@ -604,34 +606,44 @@ const App = () => {
         </div>
       </header>
 
-      {/* Main Grid */}
-      <div className="flex-1 grid grid-cols-12 gap-3 min-h-0">
+      {/* Main Grid: Precision balanced to 20% : 60% : 20% ratio */}
+      <div className="flex-1 grid grid-cols-[20%_1fr_20%] gap-3 min-h-0">
 
-        {/* LEFT Column */}
-        <section className="col-span-3 flex flex-col gap-3 min-h-0">
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 flex-1 flex flex-col gap-4 shadow-xl aurora-border">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+        {/* LEFT Column (20%) */}
+        <section className="flex flex-col gap-3 min-h-0">
+          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 flex-1 flex flex-col gap-4 shadow-xl aurora-border overflow-hidden">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-2 flex-shrink-0">
               <h2 className="text-[13px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2"><Settings className="w-3 h-3 text-blue-500" /> {t.params}</h2>
               <div className={`text-[11px] font-mono font-black px-1.5 py-0.5 rounded border ${Object.values(weights).reduce((a, b) => a + b, 0) === 100 ? 'border-emerald-500 text-emerald-500' : 'border-amber-500 text-amber-500'}`}>Σ={Object.values(weights).reduce((a, b) => a + b, 0)}%</div>
             </div>
 
             <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                  <span className="flex items-center gap-1">
-                    <GraduationCap className="w-3 h-3 text-rose-500" /> {t.threshold}
-                    <button onClick={() => setExplainer('threshold')} className="text-slate-700 hover:text-blue-400 p-0.5 transition-colors"><HelpCircle className="w-2.5 h-2.5" /></button>
-                  </span>
-                  <span className="text-rose-400 font-mono text-xs">{threshold}.0</span>
+              {/* Threshold: The Decision Gateway (Emphasized) */}
+              <div className="bg-rose-500/[0.03] border border-rose-500/10 rounded-xl p-3 relative overflow-hidden group">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500/40"></div>
+                <div className="space-y-2 relative z-10">
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-1.5 text-[11px] font-black text-rose-400 uppercase tracking-widest mb-0.5">
+                        <GraduationCap className="w-3.5 h-3.5" /> {t.threshold}
+                        <button onClick={() => setExplainer('threshold')} className="text-slate-600 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-2.5 h-2.5" /></button>
+                      </div>
+                      <span className="text-[8px] font-black text-rose-500/60 uppercase tracking-tighter">Master Policy Gateway</span>
+                    </div>
+                    <div className="text-right flex flex-col">
+                      <span className="text-rose-400 font-mono text-xl font-black leading-none drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]">{threshold}</span>
+                      <span className="text-[8px] font-bold text-slate-600 uppercase">Percentile</span>
+                    </div>
+                  </div>
+                  <input type="range" min="0" max="100" value={threshold} onChange={(e) => setThreshold(parseInt(e.target.value))} className="w-full accent-rose-500 h-1" />
                 </div>
-                <input type="range" min="0" max="100" value={threshold} onChange={(e) => setThreshold(parseInt(e.target.value))} className="w-full" />
               </div>
 
               <div className="flex flex-col gap-2 min-h-0 flex-1">
                 <div className="flex flex-col gap-1.5">
                   <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
                     {t.weights}
-                    <button onClick={() => setExplainer('weights')} className="text-slate-700 hover:text-blue-400 p-0.5 transition-colors"><HelpCircle className="w-2.5 h-2.5" /></button>
+                    <button onClick={() => setExplainer('weights')} className="text-slate-600 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-[11px] h-[11px]" /></button>
                   </h3>
                   <div className="grid grid-cols-2 gap-1 px-0.5">
                     <button onClick={() => handleWeights('normalize')} className="text-[10px] bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile btn-primary-tactile">{t.normalize}</button>
@@ -643,11 +655,11 @@ const App = () => {
                 <div className="flex-1 space-y-1.5 pr-0.5 overflow-hidden">
                   {Object.keys(weights).map(k => (
                     <div key={k} className="space-y-0 relative group">
-                      <div className="flex justify-between text-xs font-bold leading-none mb-0.5">
-                        <span className="text-slate-400 capitalize">{t[k] || k}</span>
+                      <div className="flex justify-between text-[10px] font-bold leading-none mb-0.5">
+                        <span className="text-slate-400 capitalize truncate max-w-[120px]">{t[k] || k}</span>
                         <span className="text-blue-400 font-mono">{weights[k]}%</span>
                       </div>
-                      <input type="range" min="0" max="100" value={weights[k]} onChange={(e) => setWeights(p => ({ ...p, [k]: parseInt(e.target.value) }))} className="w-full" />
+                      <input type="range" min="0" max="100" value={weights[k]} onChange={(e) => setWeights(p => ({ ...p, [k]: parseInt(e.target.value) }))} className="w-full h-1" />
                       <div className="absolute -left-1.5 top-0 bottom-0 w-0.5 bg-blue-500/40 rounded opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   ))}
@@ -656,23 +668,21 @@ const App = () => {
             </div>
           </div>
           {/* Lab Guide fixed height h-24 */}
-          <div className={`bg-[#161b22] border border-slate-800 rounded-2xl p-3 shadow-xl relative overflow-hidden h-28 flex-shrink-0 flex flex-col justify-between active:scale-[0.98] transition-all cursor-pointer aurora-border ${glassMode ? 'glass-card' : ''}`}>
-            <div className="relative z-10 flex flex-col h-full">
-              <div className="flex justify-between items-center mb-1">
-                <p className="font-black text-xs tracking-widest uppercase text-slate-400 flex items-center gap-2"><BookOpen className="w-3 h-3 text-blue-500" /> {t.labGuide}</p>
-                <button onClick={(e) => { e.stopPropagation(); setTipIndex((tipIndex + 1) % LAB_TIPS[lang].length); }} className="p-1 hover:bg-slate-800 rounded-lg flex items-center gap-0.5 text-[11px] font-black uppercase text-blue-400 transition-colors btn-tactile">
-                  {t.nextTip} <ChevronRight className="w-3 h-3" />
-                </button>
-              </div>
-              <p className="text-[13px] leading-tight italic font-medium text-slate-300">"{LAB_TIPS[lang][tipIndex]}"</p>
+          <div className={`bg-[#161b22] border border-slate-800 rounded-2xl p-3 shadow-xl relative overflow-hidden h-24 flex-shrink-0 flex flex-col active:scale-[0.98] transition-all cursor-pointer aurora-border ${glassMode ? 'glass-card' : ''}`}>
+            <div className="flex justify-between items-center mb-2">
+              <p className="font-black text-xs tracking-widest uppercase text-slate-400 flex items-center gap-2"><BookOpen className="w-3 h-3 text-blue-500" /> {t.labGuide}</p>
+              <button onClick={(e) => { e.stopPropagation(); setTipIndex((tipIndex + 1) % LAB_TIPS[lang].length); }} className="p-1 hover:bg-slate-800 rounded-lg flex items-center gap-0.5 text-[11px] font-black uppercase text-blue-400 transition-colors btn-tactile">
+                {t.nextTip} <ChevronRight className="w-3 h-3" />
+              </button>
             </div>
+            <p className="text-[13px] leading-tight italic font-medium text-slate-300">"{LAB_TIPS[lang][tipIndex]}"</p>
             <div className="absolute -bottom-2 -right-2 w-10 h-10 opacity-[0.05] text-blue-500"><Info className="w-full h-full" /></div>
           </div>
         </section>
 
-        {/* MIDDLE Column */}
-        <section className="col-span-6 flex flex-col gap-3 min-h-0">
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[42%] relative shadow-inner aurora-border">
+        {/* MIDDLE Column (60%) */}
+        <section className="flex flex-col gap-3 min-h-0">
+          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[53%] relative shadow-inner aurora-border">
             <div className="flex flex-col mb-1">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
@@ -689,16 +699,19 @@ const App = () => {
                   <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-rose-500" /> {t.reject}</span>
                 </div>
               </div>
-              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-tight mt-0.5">
-                {!swapAxes ? t.axesInfo : (lang === 'zh' ? '横轴: SAT | 纵轴: GPA' : (lang === 'es' ? 'X: SAT | Y: GPA' : 'X: SAT | Y: GPA'))}
-              </p>
             </div>
-            <div className="h-[calc(100%-20px)] w-full">
+            <div className="h-[calc(100%-20px)] w-full relative group">
+              {/* Physical Truncation Marks (Standard Scientific Notation) */}
+              <div className="absolute bottom-[28px] left-[34px] flex flex-col gap-0.5 rotate-[-20deg] pointer-events-none select-none opacity-50 z-10">
+                <div className="w-3.5 h-[1.5px] bg-slate-500 rounded-full shadow-[0_0_5px_rgba(0,0,0,0.5)]"></div>
+                <div className="w-3.5 h-[1.5px] bg-slate-500 rounded-full shadow-[0_0_5px_rgba(0,0,0,0.5)]"></div>
+              </div>
               <ResponsiveContainer>
-                <ScatterChart margin={{ top: 10, right: 20, bottom: 0, left: -20 }}>
+                <ScatterChart margin={{ top: 20, right: 40, bottom: 20, left: 10 }}>
+
                   <CartesianGrid strokeDasharray="3 3" stroke={glassMode ? "rgba(255,255,255,0.03)" : "#21262d"} vertical={false} />
-                  <XAxis type="number" dataKey={!swapAxes ? "gpa" : "sat"} domain={!swapAxes ? [2.0, 4.0] : [800, 1600]} stroke="#484f58" fontSize={10} tick={{ fontFamily: 'JetBrains Mono' }} allowDataOverflow={true} />
-                  <YAxis type="number" dataKey={!swapAxes ? "sat" : "gpa"} domain={!swapAxes ? [800, 1600] : [2.0, 4.0]} stroke="#484f58" fontSize={10} tick={{ fontFamily: 'JetBrains Mono' }} allowDataOverflow={true} />
+                  <XAxis type="number" dataKey={!swapAxes ? "gpa" : "sat"} domain={!swapAxes ? [2.5, 4.0] : [1200, 1600]} stroke="#484f58" fontSize={10} tick={{ fontFamily: 'JetBrains Mono' }} allowDataOverflow={true} label={{ value: !swapAxes ? 'GPA' : 'SAT', position: 'insideBottomRight', offset: -10, fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono', fontWeight: '900' }} />
+                  <YAxis type="number" dataKey={!swapAxes ? "sat" : "gpa"} domain={!swapAxes ? [1200, 1600] : [2.5, 4.0]} stroke="#484f58" fontSize={10} tick={{ fontFamily: 'JetBrains Mono' }} allowDataOverflow={true} label={{ value: !swapAxes ? 'SAT' : 'GPA', angle: -90, position: 'insideLeft', offset: 10, fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono', fontWeight: '900' }} />
                   {boundaryVal !== null && (
                     <ReferenceLine y={boundaryVal} stroke="#3b82f6" strokeDasharray="4 4" strokeWidth={1.5} label={{ position: 'right', value: t.decisionBoundary, fill: '#3b82f6', fontSize: 9, fontWeight: '900', letterSpacing: '0.1em' }} />
                   )}
@@ -824,18 +837,18 @@ const App = () => {
 
             {/* FEATURE INSPECTOR */}
             <div className="p-3 flex flex-col min-h-0 bg-[#0d1117]/20 h-full overflow-hidden">
-              <div className="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5 flex-shrink-0">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 flex-shrink-0">
                 <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-widest"><Fingerprint className="w-3.5 h-3.5" /> {t.inspector}</div>
-                <button onClick={() => setExplainer('inspector')} className="text-slate-700 hover:text-blue-400 transition-colors"><HelpCircle className="w-3 h-3" /></button>
+                <button onClick={() => setExplainer('inspector')} className="text-slate-700 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-[11px] h-[11px]" /></button>
               </div>
 
-              <div className="flex-1 flex flex-col justify-start min-h-0 gap-2.5">
+              <div className="flex-1 flex flex-col justify-start min-h-0 gap-2.5 pt-2.5">
                 <div className="space-y-2">
-                  <div className="space-y-0.5 opacity-70">
+                  <div className="space-y-0 opacity-70">
                     <div className="flex justify-between text-[10px] font-bold text-slate-400 tracking-wider uppercase leading-none"><span>GPA</span><span className="font-mono">{originalStudent.gpa.toFixed(2)}</span></div>
                     <input type="range" min="2.0" max="4.0" step="0.01" value={originalStudent.gpa} disabled className="w-full h-1 bg-slate-800 rounded-full accent-slate-600 opacity-50 pointer-events-none" />
                   </div>
-                  <div className="space-y-0.5 opacity-70">
+                  <div className="space-y-0 opacity-70">
                     <div className="flex justify-between text-[10px] font-bold text-slate-400 tracking-wider uppercase leading-none"><span>SAT</span><span className="font-mono">{originalStudent.sat}</span></div>
                     <input type="range" min="800" max="1600" step="10" value={originalStudent.sat} disabled className="w-full h-1 bg-slate-800 rounded-full accent-slate-600 opacity-50 pointer-events-none" />
                   </div>
@@ -854,12 +867,12 @@ const App = () => {
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between px-3 bg-slate-800/20 border border-slate-700/30 rounded-2xl py-2.5 shadow-inner relative group">
+                <div className="flex items-center justify-between px-3 bg-slate-800/20 border border-slate-700/30 rounded-xl h-[60px] shadow-inner relative group btn-tactile cursor-default !justify-between">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">{t.margin}</span>
-                      <button onClick={() => setExplainer('margin')} className="p-0.5 text-slate-600 hover:text-blue-400 transition-colors">
-                        <HelpCircle className="w-3 h-3" />
+                      <button onClick={() => setExplainer('margin')} className="p-0.5 text-slate-600 hover:text-blue-400 transition-colors btn-tactile">
+                        <HelpCircle className="w-[9px] h-[9px]" />
                       </button>
                     </div>
                     <span className="text-[7px] text-slate-500 font-bold uppercase tracking-tighter leading-none">Standardized L2 Norm</span>
@@ -867,12 +880,12 @@ const App = () => {
                   <span className="text-sm font-mono font-black text-blue-500 drop-shadow-[0_0_10_rgba(59,130,246,0.4)]">{marginStats?.margin || "0.00"}</span>
                 </div>
 
-                <div className={`mt-auto p-3 rounded-[2rem] text-center shadow-lg border-2 h-20 flex flex-col justify-center transition-all ${isAdmitted(originalStudent) ? 'bg-emerald-500 border-emerald-400 text-white shadow-emerald-500/20' : 'bg-rose-500 border-rose-400 text-white shadow-rose-500/20'}`}>
-                  <p className="text-[9px] font-black uppercase mb-0.5 opacity-80 leading-none tracking-widest">{t.fate}</p>
-                  <p className="text-xl font-black italic tracking-tighter leading-none my-1">{isAdmitted(originalStudent) ? t.admit : t.reject}</p>
-                  <p className="text-[10px] font-mono mt-0.5 opacity-90 uppercase tracking-widest leading-none">
-                    Score: <span className="text-white font-bold">{calcScore(originalStudent, weights).toFixed(1)}</span>
-                  </p>
+                <div className={`mt-auto result-indicator ${isAdmitted(originalStudent) ? 'status-admit' : 'status-reject'}`}>
+                  <div className="status-label">{t.fate}</div>
+                  <div className="status-value">{isAdmitted(originalStudent) ? t.admit : t.reject}</div>
+                  <div className="status-score">
+                    SCORE: <span>{calcScore(originalStudent, weights).toFixed(1)}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -880,18 +893,18 @@ const App = () => {
 
             {/* COUNTERFACTUAL EDITOR */}
             <div className="p-3 flex flex-col min-h-0 bg-blue-500/[0.03] h-full overflow-hidden">
-              <div className="flex items-center justify-between mb-2 border-b border-blue-500/20 pb-1.5 flex-shrink-0">
+              <div className="flex items-center justify-between border-b border-blue-500/20 pb-1.5 flex-shrink-0">
                 <div className="flex items-center gap-2 text-[11px] font-black text-blue-400 uppercase tracking-widest"><Target className="w-3.5 h-3.5" /> {t.editor}</div>
-                <button onClick={() => setExplainer('editor')} className="text-slate-700 hover:text-blue-400 transition-colors"><HelpCircle className="w-3 h-3" /></button>
+                <button onClick={() => setExplainer('editor')} className="text-slate-700 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-[11px] h-[11px]" /></button>
               </div>
 
-              <div className="flex-1 flex flex-col justify-start min-h-0 gap-2.5">
+              <div className="flex-1 flex flex-col justify-start min-h-0 gap-2.5 pt-2.5">
                 <div className="space-y-2">
-                  <div className="space-y-0.5">
+                  <div className="space-y-0">
                     <div className="flex justify-between text-[10px] font-bold text-blue-400 tracking-wider uppercase leading-none"><span>GPA</span><span className="font-mono">{cfProfile.gpa.toFixed(2)}</span></div>
                     <input type="range" min="2.0" max="4.0" step="0.01" value={cfProfile.gpa} onChange={(e) => handleCfChange('gpa', parseFloat(e.target.value))} className="w-full h-1 bg-slate-800 rounded-full accent-blue-600" />
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0">
                     <div className="flex justify-between text-[10px] font-bold text-blue-400 tracking-wider uppercase leading-none"><span>SAT</span><span className="font-mono">{cfProfile.sat}</span></div>
                     <input type="range" min="800" max="1600" step="10" value={cfProfile.sat} onChange={(e) => handleCfChange('sat', parseInt(e.target.value))} className="w-full h-1 bg-slate-800 rounded-full accent-blue-600" />
                   </div>
@@ -933,7 +946,7 @@ const App = () => {
                   })}
                 </div>
 
-                <div className="flex items-center justify-between px-3 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl py-2.5 shadow-inner relative group">
+                <div className="flex items-center justify-between px-3 bg-indigo-500/5 border border-indigo-500/10 rounded-xl h-[60px] shadow-inner relative group btn-tactile cursor-default !justify-between text-indigo-500">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest leading-none">{t.margin}</span>
@@ -948,12 +961,12 @@ const App = () => {
                   <span className="text-sm font-mono font-black text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]">{cfMarginStats?.margin || "0.00"}</span>
                 </div>
 
-                <div className={`mt-auto p-3 rounded-[2rem] text-center shadow-lg border-2 h-20 flex flex-col justify-center transition-all ${isAdmitted(cfProfile) ? 'bg-emerald-500 border-emerald-400 text-white shadow-emerald-500/20' : 'bg-rose-500 border-rose-400 text-white shadow-rose-500/20'}`}>
-                  <p className="text-[9px] font-black uppercase mb-0.5 opacity-80 leading-none tracking-widest">{t.fate}</p>
-                  <p className="text-xl font-black italic tracking-tighter leading-none my-1">{isAdmitted(cfProfile) ? t.admit : t.reject}</p>
-                  <p className="text-[10px] font-mono mt-0.5 opacity-90 uppercase tracking-widest leading-none">
-                    Score: <span className="text-white font-bold">{calcScore(cfProfile, weights).toFixed(1)}</span>
-                  </p>
+                <div className={`mt-auto result-indicator ${isAdmitted(cfProfile) ? 'status-admit' : 'status-reject'}`}>
+                  <div className="status-label">{t.fate}</div>
+                  <div className="status-value">{isAdmitted(cfProfile) ? t.admit : t.reject}</div>
+                  <div className="status-score">
+                    SCORE: <span>{calcScore(cfProfile, weights).toFixed(1)}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -961,16 +974,16 @@ const App = () => {
           </div>
         </section>
 
-        {/* RIGHT Column */}
-        <section className="col-span-3 flex flex-col gap-3 min-h-0">
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 flex-1 flex flex-col overflow-hidden shadow-xl aurora-border">
-            <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-              <h2 className="text-[13px] font-black uppercase text-slate-400 tracking-widest flex items-center justify-between w-full">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-3 h-3 text-purple-500" /> {t.slices}
+        {/* RIGHT Column (20%) */}
+        <section className="flex flex-col gap-3 min-h-0">
+          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 flex-1 flex flex-col gap-4 shadow-xl aurora-border overflow-hidden">
+            <div className="flex justify-between items-center border-b border-slate-800 pb-2 flex-shrink-0">
+              <h2 className="text-[13px] font-black uppercase text-slate-400 tracking-widest flex items-center justify-between w-full whitespace-nowrap overflow-hidden">
+                <div className="flex items-center gap-2 min-w-0">
+                  <BarChart3 className="w-3 h-3 text-purple-500 flex-shrink-0" />
+                  <span className="truncate">{t.slices}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-slate-500 font-black lowercase font-mono">({t.groupRate})</span>
+                <div className="flex items-center gap-1.5 ml-2">
                   <span className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400 font-mono font-black border border-slate-700">N={data.length}</span>
                 </div>
               </h2>
@@ -980,7 +993,7 @@ const App = () => {
                 <BarChart
                   data={stats.groupStats}
                   layout="vertical"
-                  margin={{ left: 10, right: 100, top: 10, bottom: 10 }}
+                  margin={{ left: 5, right: 65, top: 10, bottom: 10 }}
                   onClick={(e) => {
                     if (e && e.activeLabel) {
                       const val = e.activeLabel;
@@ -1011,7 +1024,7 @@ const App = () => {
                             className="font-mono font-black uppercase"
                           >
                             <tspan fill="#60a5fa" fontSize="10">{value}%</tspan>
-                            <tspan fill="#475569" fontSize="9" fontWeight="bold"> [N={item.admitted}/{item.count}]</tspan>
+                            <tspan fill="#475569" fontSize="8" fontWeight="bold"> ({item.admitted}/{item.count})</tspan>
                           </text>
                         );
                       }}
@@ -1038,34 +1051,11 @@ const App = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* DISPARITY METER */}
-            <div className="mb-4 mt-2 p-3 bg-slate-800/20 border border-slate-700/30 rounded-2xl shadow-inner group">
-              <div className="flex justify-between items-center mb-2">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                  <Activity className="w-3 h-3 text-rose-500" /> {t.disparityMeter}
-                </p>
-                <p className={`text-[11px] font-mono font-black transition-all duration-500 ${stats.genderGap > 20 ? 'text-rose-500' : 'text-slate-400'}`}>
-                  {t.genderGap}: <span className="text-white">{stats.genderGap}%</span>
-                </p>
-              </div>
-              <div className="relative h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-yellow-500/20 to-rose-500/30" />
-                <div
-                  className={`absolute top-0 bottom-0 w-2 transition-all duration-700 shadow-[0_0_12px_rgba(255,255,255,0.5)] ${stats.genderGap > 20 ? 'bg-rose-500 scale-y-150' : 'bg-blue-400'}`}
-                  style={{ left: `${Math.min(97, stats.genderGap)}%` }}
-                />
-              </div>
-              <div className="flex justify-between mt-2 text-[8px] font-mono font-black text-slate-600 uppercase tracking-tighter opacity-80">
-                <span className={stats.genderGap <= 10 ? 'text-emerald-500' : ''}>FAIR [0-10]</span>
-                <span className={stats.genderGap > 10 && stats.genderGap <= 20 ? 'text-yellow-500' : ''}>WARN [10-20]</span>
-                <span className={stats.genderGap > 20 ? 'text-rose-500' : ''}>CRITICAL [20+]</span>
-              </div>
-            </div>
 
             <div className="pt-3 border-t border-slate-800">
               <div className="flex justify-between items-center mb-2">
                 <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-none flex items-center gap-2"><Target className="w-3 h-3 text-emerald-500" /> {t.confusion}</p>
-                <button onClick={() => setExplainer('confusion')} className="text-slate-600 hover:text-blue-400 transition-colors active:scale-95"><HelpCircle className="w-3 h-3" /></button>
+                <button onClick={() => setExplainer('confusion')} className="text-slate-600 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-[11px] h-[11px]" /></button>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-center font-mono">
                 {[
@@ -1076,38 +1066,38 @@ const App = () => {
                 ].map(m => {
                   const isActive = filterMode?.type === 'confusion' && filterMode?.value === m.l;
                   return (
-                    <div
+                    <button
                       key={m.l}
                       onClick={() => setFilterMode(prev => (prev?.type === 'confusion' && prev?.value === m.l) ? null : { type: 'confusion', value: m.l })}
-                      className={`p-1.5 rounded border shadow-sm transition-all duration-300 cursor-pointer active:scale-95 ${isActive ? `border-${m.c}-400 ring-4 ring-${m.c}-500/20 scale-[1.03]` : `border-${m.c}-500/10 hover:border-${m.c}-500/30`}`}
-                      style={{ backgroundColor: isActive ? `rgba(${m.rgb}, 0.5)` : `rgba(${m.rgb}, ${Math.max(0.05, m.r / 150)})` }}
+                      className={`p-1.5 rounded border shadow-sm transition-all duration-300 cursor-pointer flex-col btn-tactile ${isActive ? `border-${m.c}-400 ring-4 ring-${m.c}-500/20 scale-[1.03]` : `border-${m.c}-500/10 hover:border-${m.c}-500/30`}`}
+                      style={{ backgroundColor: isActive ? `rgba(${m.rgb}, 0.5)` : `rgba(${m.rgb}, ${Math.max(0.05, m.r / 150)})`, color: isActive ? 'white' : `rgba(${m.rgb}, 1)` }}
                     >
-                      <p className={`text-[9px] ${isActive ? 'text-white' : `text-${m.c}-400`} uppercase font-black leading-none mb-1.5 tracking-tighter`}>{m.l}</p>
+                      <p className={`text-[9px] uppercase font-black leading-none mb-1.5 tracking-tighter`}>{m.l}</p>
                       <div className="flex flex-col gap-0.5">
                         <p className={`text-sm font-black ${isActive ? 'text-white' : 'text-slate-200'} leading-none`}>{m.v}</p>
-                        <p className={`text-[9px] font-bold ${isActive ? 'text-white/80' : `text-${m.c}-300/60`} leading-none`}>{m.r}%</p>
+                        <p className={`text-[9px] font-bold ${isActive ? 'text-white/80' : `text-slate-200/60`} leading-none`}>{m.r}%</p>
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
             </div>
           </div>
-          {/* Ethics Alert fixed height h-24 */}
-          <div className={`bg-[#161b22] border border-slate-800 rounded-2xl p-4 shadow-xl h-28 flex-shrink-0 flex flex-col justify-center transition-all duration-500 aurora-border ${glassMode ? 'glass-card' : ''}`}>
-            <div className={`flex items-center justify-between mb-1.5 border-b border-slate-800/50 pb-1`}>
+          {/* Ethics Scanner fixed height h-24 */}
+          <div className={`bg-[#161b22] border border-slate-800 rounded-2xl p-3 shadow-xl h-24 flex-shrink-0 flex flex-col transition-all duration-500 aurora-border ${glassMode ? 'glass-card' : ''}`}>
+            <div className={`flex items-center justify-between mb-2`}>
               <div className={`flex items-center gap-2 ${dynamicAlert === t.ethNeutral ? 'text-blue-400' : 'text-amber-500'}`}>
                 <ShieldAlert className="w-3.5 h-3.5" />
                 <p className="text-xs font-black uppercase tracking-widest leading-none">{t.ethicsAlert}</p>
               </div>
-              <button onClick={() => setExplainer('scanner')} className="text-slate-600 hover:text-blue-400 transition-colors active:scale-95"><HelpCircle className="w-3 h-3" /></button>
+              <button onClick={() => setExplainer('scanner')} className="text-slate-600 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-[11px] h-[11px]" /></button>
             </div>
-            <p className={`text-[13px] leading-snug italic font-medium transition-colors duration-500 ${dynamicAlert === t.ethNeutral ? 'text-slate-400' : 'text-slate-200'}`}>{dynamicAlert}</p>
+            <p className={`text-[13px] leading-tight italic font-medium transition-colors duration-500 ${dynamicAlert === t.ethNeutral ? 'text-slate-400' : 'text-slate-200'}`}>{dynamicAlert}</p>
           </div>
         </section>
 
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

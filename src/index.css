@@ -163,21 +163,70 @@ input[type=range]::-webkit-slider-runnable-track {
 .btn-tactile {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    /* Force consistent rounding for all buttons */
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Interactive DNA: Chamfer Indicator Line */
+.btn-tactile::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, transparent 50%, currentColor 50%);
+    opacity: 0.2;
+    transition: all 0.3s ease;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* Interactive DNA: Glint Effect */
+@keyframes btn-glint {
+    0% {
+        transform: translateX(-150%) skewX(-25deg);
+    }
+
+    100% {
+        transform: translateX(150%) skewX(-25deg);
+    }
+}
+
+.btn-tactile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-150%) skewX(-25deg);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.btn-tactile:hover::before {
+    animation: btn-glint 0.8s ease-out forwards;
 }
 
 .btn-tactile:hover {
     border-color: rgba(59, 130, 246, 0.5);
-    background: rgba(59, 130, 246, 0.05);
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1),
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.15),
         inset 0 0 5px rgba(59, 130, 246, 0.1);
     transform: translateY(-1px);
 }
 
+.btn-tactile:hover::after {
+    opacity: 0.8;
+    transform: scale(1.2);
+}
+
 .btn-tactile:active {
-    transform: translateY(1px) scale(0.98);
+    transform: translateY(1px) scale(0.97);
 }
 
 /* Glowing indicator for main actions */
@@ -200,4 +249,87 @@ input[type=range]::-webkit-slider-runnable-track {
 .glass-active .btn-tactile:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Result Indicator Styles */
+.result-indicator {
+    position: relative;
+    background: rgba(13, 17, 23, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 38px;
+}
+
+.result-indicator::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: currentColor;
+    opacity: 0.8;
+}
+
+.result-indicator::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, currentColor, transparent 150%);
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.result-indicator.status-admit {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.1), inset 0 0 10px rgba(16, 185, 129, 0.05);
+}
+
+.result-indicator.status-reject {
+    color: #f43f5e;
+    border-color: rgba(244, 63, 94, 0.3);
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.1), inset 0 0 10px rgba(244, 63, 94, 0.05);
+}
+
+.result-indicator .status-label {
+    font-size: 0.55rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.6;
+    margin-bottom: 0.15rem;
+}
+
+.result-indicator .status-value {
+    font-size: 1.0rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin: 0.15rem 0;
+}
+
+.result-indicator .status-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    opacity: 0.8;
+}
+
+.result-indicator .status-score span {
+    font-weight: 800;
+}
+
+.glass-active .result-indicator {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
 }
