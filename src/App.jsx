@@ -260,7 +260,7 @@ const App = () => {
   const [tipIndex, setTipIndex] = useState(0);
 
   const [data] = useState(INITIAL_POOL);
-  const [threshold, setThreshold] = useState(65);
+  const [threshold, setThreshold] = useState(40);
   const [weights, setWeights] = useState({ ...DEFAULT_WEIGHTS });
   const [selectedId, setSelectedId] = useState(0);
   const [cfProfile, setCfProfile] = useState({ ...INITIAL_POOL[0] });
