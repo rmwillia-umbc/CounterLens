@@ -489,7 +489,7 @@ const App = () => {
             <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">{t.title}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
-              <span className="text-[10px] text-slate-400 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.2</span>
+              <span className="text-[10px] text-slate-400 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.3</span>
             </div>
           </div>
         </div>
@@ -765,7 +765,7 @@ const App = () => {
                 <button onClick={() => setExplainer('editor')} className="text-slate-700 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-[12px] h-[12px]" /></button>
               </div>
 
-              <div className="flex-1 flex flex-col gap-4 pt-4 overflow-y-auto no-scrollbar">
+              <div className="flex-1 flex flex-col gap-4 pt-4 overflow-y-auto overflow-x-hidden no-scrollbar">
                 {/* Sliders Area (Vertical Stack for narrow column) */}
                 <div className="space-y-4">
                   <div className="space-y-1 relative">
@@ -783,7 +783,7 @@ const App = () => {
                     <div className="relative h-5 flex items-center">
                       <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 bg-slate-800 rounded-full"></div>
                       <div
-                        className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-slate-500/40 rounded-full z-0 transition-all duration-500"
+                        className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-slate-500/40 rounded-full z-0 transition-all duration-500 -translate-x-1/2"
                         style={{ left: `${((originalStudent.gpa - 2) / 2) * 100}%` }}
                       ></div>
                       <input type="range" min="2.0" max="4.0" step="0.01" value={cfProfile.gpa} onChange={(e) => handleCfChange('gpa', parseFloat(e.target.value))} className="absolute inset-0 w-full bg-transparent appearance-none cursor-pointer z-10" />
@@ -805,7 +805,7 @@ const App = () => {
                     <div className="relative h-5 flex items-center">
                       <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 bg-slate-800 rounded-full"></div>
                       <div
-                        className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-slate-500/40 rounded-full z-0 transition-all duration-500"
+                        className="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-slate-500/40 rounded-full z-0 transition-all duration-500 -translate-x-1/2"
                         style={{ left: `${((originalStudent.sat - 800) / 800) * 100}%` }}
                       ></div>
                       <input type="range" min="800" max="1600" step="10" value={cfProfile.sat} onChange={(e) => handleCfChange('sat', parseInt(e.target.value))} className="absolute inset-0 w-full bg-transparent appearance-none cursor-pointer z-10" />
@@ -853,7 +853,7 @@ const App = () => {
                     </div>
                   </div>
 
-                  <div className={`flex-1 flex flex-col justify-center items-center py-4 rounded-xl border-2 transition-all duration-700 relative overflow-hidden ${isAdmitted(cfProfile) ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' : 'bg-rose-500/10 border-rose-500/30 text-rose-500'} ${isAdmitted(originalStudent) !== isAdmitted(cfProfile) ? 'animate-fate-flip' : ''}`}>
+                  <div className={`flex-1 flex flex-col justify-center items-center py-4 rounded-xl border-2 transition-all duration-700 relative overflow-hidden animate-soft-breath ${isAdmitted(cfProfile) ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'bg-rose-500/10 border-rose-500/30 text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.1)]'} ${isAdmitted(originalStudent) !== isAdmitted(cfProfile) ? 'animate-fate-flip' : ''}`}>
                     {isAdmitted(originalStudent) !== isAdmitted(cfProfile) && (
                       <div className="absolute top-1 right-1 flex items-center gap-1 bg-amber-500 text-white px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-tighter animate-pulse">
                         <Sparkles className="w-2 h-2" /> {t.fateDelta}
