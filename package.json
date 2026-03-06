@@ -1,6 +1,6 @@
 {
-  "name": "what-if-lab-umbc",
-  "homepage": "https://cyang6dev.github.io/berkeley-lab/",
+  "name": "counter-lens",
+  "homepage": "https://cyang6dev.github.io/counter-lens/",
   "private": true,
   "version": "2.3.1",
   "type": "module",

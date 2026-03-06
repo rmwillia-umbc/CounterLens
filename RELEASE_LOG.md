@@ -1,4 +1,4 @@
-# What-If Lab Release Log - V2.2
+# CounterLens Release Log - V2.2
 
 ## [V2.3.1] - 2026-03-04
 ### Fixed

@@ -28,7 +28,7 @@ const COLORS = {
 
 const TRANSLATIONS = {
   en: {
-    title: "What-If Lab",
+    title: "CounterLens",
     accuracy: "Model Accuracy",
     params: "Parameters",
     threshold: "Threshold",
@@ -39,7 +39,7 @@ const TRANSLATIONS = {
     slices: "Dataset Slices",
     axesInfo: "X: GPA | Y: SAT",
     admit: "ADMIT", reject: "REJECT",
-    original: "Original Profile", whatif: "What-If Editor",
+    original: "Original Profile", whatif: "CounterLens Editor",
     score: "Score", fate: "Result",
     metrics: "Fairness & Metrics", groupRate: "Admission Rate (%)",
     confusion: "Confusion Matrix", tp: "True Positive", fp: "False Positive", tn: "True Negative", fn: "False Negative",
@@ -78,7 +78,7 @@ const TRANSLATIONS = {
     editorExplainer: "The Editor enables you to manipulate features to see 'what if' the inputs were different. This helps in understanding the model's decision boundaries and sensitivity."
   },
   zh: {
-    title: "What-If Lab",
+    title: "CounterLens",
     accuracy: "模型准确度",
     params: "模型参数调节",
     threshold: "录取门槛",
@@ -128,18 +128,18 @@ const TRANSLATIONS = {
     editorExplainer: "反事实编辑器允许你模拟改变输入特征，观察‘如果当初不同’会如何影响判定。这能帮助你理解模型判定的敏感度和界限。"
   },
   es: {
-    title: "What-If Lab",
+    title: "CounterLens",
     accuracy: "Precisión",
     params: "Parámetros",
     threshold: "Umbral",
     weights: "Pesos (%)",
     gpa: "GPA", sat: "SAT", athlete: "ATLETA", firstGen: "1RA-GEN", gender: "GÉNERO (FAVOR FEM)", resident: "RESIDENTE",
-    visualizer: "Visualizador What-If",
-    editor: "Editor What-If",
+    visualizer: "CounterLens Visualizer",
+    editor: "CounterLens Editor",
     slices: "Dataset Slices",
     axesInfo: "X: GPA | Y: SAT",
     admit: "ADMITIR", reject: "RECHAZAR",
-    original: "Original", whatif: "Editor What-If",
+    original: "Original", whatif: "CounterLens Editor",
     score: "Puntaje", fate: "Resultado",
     metrics: "Métricas", groupRate: "Tasa por Grupo (%)",
     confusion: "Matriz", tp: "Real Pos", fp: "Falso Pos", tn: "Real Neg", fn: "Falso Neg",
@@ -690,7 +690,7 @@ const App = () => {
                     opacity={checkMatch(originalStudent) ? 1 : 0.15}
                   />
 
-                  {/* Current What-If Point (Larger/Glowing) */}
+                  {/* Current CounterLens Point (Larger/Glowing) */}
                   <Scatter data={[trajectoryData[1]]}>
                     <Cell
                       fill={isAdmitted(cfProfile) ? COLORS.admit : COLORS.reject}
