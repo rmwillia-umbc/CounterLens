@@ -5,16 +5,18 @@ import {
   Cell, ScatterChart, Scatter, ReferenceLine, LabelList
 } from 'recharts';
 import {
-  Settings, GraduationCap, Target, RefreshCw, Fingerprint, ShieldAlert,
-  HelpCircle, Info, Globe, User, ExternalLink, X, ChevronRight, School, Database, BookOpen, BarChart3, Activity, Scale,
-  Sparkles, Layout
+  Sparkles, Info, ExternalLink, Telescope, RotateCcw, Trash2, HelpCircle, Activity, RefreshCw, Target,
+  ChevronDown, ChevronUp, Square, CheckSquare, GripHorizontal, Sliders, Settings, Filter, Users, LayoutDashboard, Database, AlertCircle, CheckCircle2, XCircle, MoreVertical,
+  Maximize2, Minimize2, ZoomIn, ZoomOut, Download, Share2, Save, FileText, Bookmark, BookOpen, GraduationCap, Github, Lightbulb,
+  Layout, BarChart3, Fingerprint, User, ShieldAlert, School, Globe
 } from 'lucide-react';
 
 /**
  * AI/ML Ethics Lab - V2.3
  */
 
-const DEFAULT_WEIGHTS = { gpa: 40, sat: 30, athlete: 10, firstGen: 10, gender: 5, resident: 5 };
+const DEFAULT_WEIGHTS = { gpa: 25, sat: 25, athlete: 20, firstGen: 10, gender: 10, resident: 10 };
+const BASELINE_PROFILE = { gpa: 3.25, sat: 1400, isAthlete: false, isFirstGen: false, gender: 'Male', isResident: true };
 
 const COLORS = {
   admit: '#10b981', reject: '#ef4444', accent: '#3b82f6', slate: '#475569',
@@ -52,7 +54,7 @@ const TRANSLATIONS = {
     university: "University of Maryland, Baltimore County (UMBC)",
     visitLab: "Visit Lab Site", visitDept: "Department Website",
     aboutBtn: "Credits", decisionBoundary: "Decision Boundary",
-    aboutBtn: "Credits", decisionBoundary: "Decision Boundary",
+    conditionalBoundary: "Boundary (Current Profile)",
     disparityMeter: "Disparity Meter",
     genderGap: "Gender Gap",
     yes: "YES", no: "NO", male: "MALE", female: "FEMALE", nonbinary: "NON-BINARY",
@@ -60,7 +62,6 @@ const TRANSLATIONS = {
     thresholdWiki: "https://en.wikipedia.org/wiki/Threshold",
     confusionWiki: "https://en.wikipedia.org/wiki/Confusion_matrix",
     thresholdExplainer: "The threshold is the policy cutoff. A student's score is a weighted sum of attributes. Adjusting this represents changing admission standards.",
-    confusionExplainer: "Compares decisions with 'hidden potential'. identifies successes and failures like 'False Negatives' (unfairly rejected).",
     confusionExplainer: "Compares decisions with 'hidden potential'. identifies successes and failures like 'False Negatives' (unfairly rejected).",
     learnMore: "Wikipedia",
     axisSwap: "Swap Axes",
@@ -103,7 +104,7 @@ const TRANSLATIONS = {
     university: "马里兰大学巴尔的摩郡分校 (UMBC)",
     visitLab: "访问实验室主页", visitDept: "访问系部官网",
     aboutBtn: "关于项目", decisionBoundary: "录取分界线",
-    aboutBtn: "关于项目", decisionBoundary: "录取分界线",
+    conditionalBoundary: "当前档案判定基准线",
     disparityMeter: "公平性仪表盘",
     genderGap: "性别录取差距",
     yes: "是", no: "否", male: "男性", female: "女性", nonbinary: "非二元",
@@ -111,7 +112,6 @@ const TRANSLATIONS = {
     thresholdWiki: "https://zh.wikipedia.org/wiki/%E9%98%88%E5%80%BC",
     confusionWiki: "https://zh.wikipedia.org/wiki/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5",
     thresholdExplainer: "录取门槛是及格线。系统计算加权总分，达到门槛则录取。调高门槛代表录取标准变严。",
-    confusionExplainer: "混淆矩阵对比判定结果与真实潜质。它揭示了误判录取（错误选拔）和误判拒绝（排斥人才）。",
     confusionExplainer: "混淆矩阵对比判定结果与真实潜质。它揭示了误判录取（错误选拔）和误判拒绝（排斥人才）。",
     learnMore: "维基百科",
     axisSwap: "轴向切换",
@@ -154,6 +154,7 @@ const TRANSLATIONS = {
     university: "UMBC",
     visitLab: "Visitar Lab", visitDept: "Visitar Depto.",
     aboutBtn: "Créditos", decisionBoundary: "Límite",
+    conditionalBoundary: "Límite (Perfil Actual)",
     disparityMeter: "Medidor de Disparidad",
     genderGap: "Brecha de Género",
     yes: "SÍ", no: "NO", male: "MASC", female: "FEM", nonbinary: "NO-BIN",
@@ -231,24 +232,25 @@ const App = () => {
   const isAdmitted = (p) => calcScore(p, weights) >= threshold;
 
   const boundaryVal = useMemo(() => {
-    const p = cfProfile;
-    if (!p) return null;
+    // If no student selected, use baseline to show a global boundary
+    const p = cfProfile || BASELINE_PROFILE;
     if (!swapAxes) {
       if (weights.sat === 0) return null;
       const normalizedGpa = (p.gpa - 2.5) / 1.5 * 100;
       const otherScores = (normalizedGpa * weights.gpa) / 100 + (p.isAthlete ? weights.athlete : 0) + (p.isFirstGen ? weights.firstGen : 0) + (p.gender === 'Female' ? weights.gender : 0) + (p.isResident ? weights.resident : 0);
       const neededSatNorm = (threshold - otherScores) / weights.sat * 100;
       const val = (neededSatNorm / 100 * 400) + 1200;
-      return val >= 800 && val <= 1600 ? val : null;
+      // Allow it to be slightly out of chart area but not into extreme negatives
+      return val >= 600 && val <= 2000 ? val : null;
     } else {
       if (weights.gpa === 0) return null;
       const normalizedSat = (p.sat - 1200) / 400 * 100;
       const otherScores = (normalizedSat * weights.sat) / 100 + (p.isAthlete ? weights.athlete : 0) + (p.isFirstGen ? weights.firstGen : 0) + (p.gender === 'Female' ? weights.gender : 0) + (p.isResident ? weights.resident : 0);
       const neededGpaNorm = (threshold - otherScores) / weights.gpa * 100;
       const val = (neededGpaNorm / 100 * 1.5) + 2.5;
-      return val >= 2.0 && val <= 4.0 ? val : null;
+      return val >= 1.0 && val <= 5.0 ? val : null;
     }
-  }, [cfProfile, weights, threshold, swapAxes]);
+  }, [cfProfile, threshold, weights, swapAxes]);
 
   const stats = useMemo(() => {
     let tp = 0, fp = 0, tn = 0, fn = 0;
@@ -483,10 +485,10 @@ const App = () => {
         <div className="flex items-center gap-4">
           <div className="relative flex items-center justify-center">
             <div className="absolute inset-0 bg-amber-500/20 blur-lg rounded-full"></div>
-            <Scale className="w-7 h-7 text-amber-500 relative z-10 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+            <Telescope className="w-7 h-7 text-amber-500 relative z-10 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-lg font-black text-white uppercase tracking-tighter leading-none">{t.title}</h1>
+            <h1 className="text-lg font-black text-white uppercase tracking-[0.15em] leading-none">{t.title}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
               <span className="text-[10px] text-slate-400 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.3</span>
@@ -496,22 +498,25 @@ const App = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setGlassMode(!glassMode)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all duration-500 btn-tactile ${glassMode ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] border-transparent' : 'bg-[#161b22] border border-slate-800 text-slate-400 hover:text-indigo-400'}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase transition-all duration-300 btn-tactile ${glassMode ? 'bg-white/10 text-white border border-white/20 backdrop-blur-md shadow-lg' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-indigo-400'}`}
           >
-            <Sparkles className={`w-3 h-3 ${glassMode ? 'animate-pulse' : ''}`} />
+            <Sparkles className={`w-3.5 h-3.5 ${glassMode ? 'animate-pulse' : ''}`} />
             {lang === 'zh' ? '毛玻璃' : (lang === 'es' ? 'CRISTAL' : 'GLASS')}
           </button>
-          <button onClick={() => setShowCredits(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-[#161b22] border border-slate-800 text-slate-400 hover:text-blue-400 transition-all btn-tactile"><Info className="w-3.5 h-3.5" /> {t.aboutBtn}</button>
-          <div className="flex bg-[#161b22] rounded-lg p-0.5 border border-slate-800">
+
+          <button onClick={() => setShowCredits(true)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase border transition-all btn-tactile ${glassMode ? 'bg-white/5 border-white/10 text-slate-400 hover:text-white backdrop-blur-sm' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-blue-400'}`}><Info className="w-3.5 h-3.5" /> {t.aboutBtn}</button>
+
+          <div className={`flex rounded-lg p-0.5 border transition-all ${glassMode ? 'bg-white/5 border-white/10 backdrop-blur-md' : 'bg-slate-900 border-slate-800'}`}>
             {['en', 'zh', 'es'].map(l => (
-              <button key={l} onClick={() => setLang(l)} className={`px-2 py-1 rounded text-xs font-black uppercase transition-all btn-tactile ${lang === l ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-white'}`}>
+              <button key={l} onClick={() => setLang(l)} className={`px-2.5 py-1 rounded text-xs font-black uppercase transition-all btn-tactile ${lang === l ? (glassMode ? 'bg-white/10 text-white border border-white/20 shadow-sm' : 'bg-blue-600/40 text-white') : 'text-slate-500 hover:text-white'}`}>
                 {l}
               </button>
             ))}
           </div>
-          <div className={`${glassMode ? 'bg-white/5 border-white/10' : 'bg-slate-900 border-slate-800'} px-4 py-1 rounded-xl border flex items-center gap-3 transition-colors`}>
+
+          <div className={`${glassMode ? 'bg-white/5 border-white/10 backdrop-blur-sm' : 'bg-slate-900/60 border-slate-800'} px-4 py-1 rounded-xl border flex items-center gap-3 transition-colors`}>
             <p className="text-xs text-slate-400 font-black uppercase">{t.accuracy}</p>
-            <p className="text-lg font-black text-blue-500">{stats.accuracy}%</p>
+            <p className="text-lg font-black text-blue-500 transition-all">{stats.accuracy}%</p>
           </div>
         </div>
       </header>
@@ -561,10 +566,10 @@ const App = () => {
                     <button onClick={() => setExplainer('weights')} className="text-slate-600 hover:text-blue-400 transition-colors btn-tactile p-0.5"><HelpCircle className="w-4 h-4" /></button>
                   </h3>
                   <div className="grid grid-cols-2 gap-1 px-0.5">
-                    <button onClick={() => handleWeights('normalize')} className="text-xs bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile btn-primary-tactile">{t.normalize}</button>
-                    <button onClick={() => handleWeights('default')} className="text-xs bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile">{t.default}</button>
+                    <button onClick={() => handleWeights('normalize')} className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile">{t.normalize}</button>
+                    <button onClick={() => handleWeights('default')} className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile">{t.default}</button>
                     <button onClick={() => handleWeights('random')} className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile">{t.random}</button>
-                    <button onClick={() => handleWeights('reset')} className="text-xs bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile">{t.reset}</button>
+                    <button onClick={() => handleWeights('reset')} className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 py-0.5 rounded uppercase font-bold transition-all active:scale-95 btn-tactile">{t.reset}</button>
                   </div>
                 </div>
                 <div className="flex-1 space-y-1.5 pr-0.5 overflow-hidden">
@@ -596,11 +601,11 @@ const App = () => {
                     </div>
                     {t.visualizer}
                   </h3>
-                  <button onClick={() => setSwapAxes(!swapAxes)} className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-black uppercase hover:bg-blue-500/20 transition-all active:scale-95 btn-tactile btn-primary-tactile">
+                  <button onClick={() => setSwapAxes(!swapAxes)} className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs font-black uppercase hover:bg-slate-700 transition-all active:scale-95 btn-tactile">
                     <RefreshCw className={`w-3 h-3 ${swapAxes ? 'rotate-180' : ''} transition-transform`} /> {t.axisSwap}
                   </button>
-                  <button onClick={() => setIsMining(!isMining)} className={`flex items-center gap-1.5 px-2 py-0.5 rounded border text-[10px] font-black uppercase transition-all active:scale-95 btn-tactile ${isMining ? 'bg-amber-500 border-amber-400 text-white shadow-lg shadow-amber-500/20' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500'}`}>
-                    <Target className={`w-2.5 h-2.5 ${isMining ? 'animate-spin-slow' : ''}`} /> {lang === 'zh' ? '挖掘疑难样本' : (lang === 'es' ? 'Minería' : 'Mine Edge Cases')}
+                  <button onClick={() => setIsMining(!isMining)} className={`flex items-center gap-1.5 px-2 py-0.5 rounded border text-xs font-black uppercase transition-all active:scale-95 btn-tactile ${isMining ? 'bg-amber-500/20 border-amber-500/50 text-amber-400 shadow-lg shadow-amber-500/20' : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'}`}>
+                    <Target className={`w-3 h-3 ${isMining ? 'animate-spin-slow' : ''}`} /> {lang === 'zh' ? '挖掘疑难样本' : (lang === 'es' ? 'Minería' : 'Mine Edge Cases')}
                   </button>
                 </div>
                 <div className="flex gap-3 text-[11px] font-black uppercase tracking-wider">
@@ -616,13 +621,19 @@ const App = () => {
                 <div className="w-3.5 h-[1.5px] bg-slate-500 rounded-full shadow-[0_0_5px_rgba(0,0,0,0.5)]"></div>
               </div>
               <ResponsiveContainer>
-                <ScatterChart margin={{ top: 20, right: 40, bottom: 20, left: 10 }}>
+                <ScatterChart margin={{ top: 20, right: 40, bottom: 20, left: 30 }}>
 
                   <CartesianGrid strokeDasharray="3 3" stroke={glassMode ? "rgba(255,255,255,0.03)" : "#21262d"} vertical={false} />
                   <XAxis type="number" dataKey={!swapAxes ? "gpa" : "sat"} domain={!swapAxes ? [2.5, 4.0] : [1200, 1600]} stroke="#484f58" fontSize={11} tick={{ fontFamily: 'JetBrains Mono' }} allowDataOverflow={true} label={{ value: !swapAxes ? 'GPA' : 'SAT', position: 'insideBottomRight', offset: -10, fill: '#64748b', fontSize: 11, fontFamily: 'JetBrains Mono', fontWeight: '900' }} />
                   <YAxis type="number" dataKey={!swapAxes ? "sat" : "gpa"} domain={!swapAxes ? [1200, 1600] : [2.5, 4.0]} stroke="#484f58" fontSize={11} tick={{ fontFamily: 'JetBrains Mono' }} allowDataOverflow={true} label={{ value: !swapAxes ? 'SAT' : 'GPA', angle: -90, position: 'insideLeft', offset: 10, fill: '#64748b', fontSize: 11, fontFamily: 'JetBrains Mono', fontWeight: '900' }} />
                   {boundaryVal !== null && (
-                    <ReferenceLine y={boundaryVal} stroke="#3b82f6" strokeDasharray="4 4" strokeWidth={1.5} label={{ position: 'right', value: t.decisionBoundary, fill: '#3b82f6', fontSize: 11, fontWeight: '900', letterSpacing: '0.1em' }} />
+                    <ReferenceLine y={boundaryVal} stroke="#3b82f6" strokeDasharray="4 4" strokeWidth={2}
+                      label={(props) => (
+                        <text x={props.viewBox.x + props.viewBox.width} y={props.viewBox.y} dy={-12} textAnchor="end" fill="#60a5fa" fontSize={11} fontWeight="900" style={{ letterSpacing: '0.05em', paintOrder: 'stroke', stroke: '#0d1117', strokeWidth: '3px', strokeLinejoin: 'round' }}>
+                          {selectedId ? t.conditionalBoundary : t.decisionBoundary}
+                        </text>
+                      )}
+                    />
                   )}
 
                   {/* Scientific Projections */}
@@ -647,14 +658,11 @@ const App = () => {
                         stroke="#3b82f6"
                         strokeDasharray="3 3"
                         opacity={0.3}
-                        label={{
-                          position: 'right',
-                          value: !swapAxes ? Math.round(originalStudent.sat) : originalStudent.gpa.toFixed(2),
-                          fill: '#3b82f6',
-                          fontSize: 10,
-                          fontFamily: 'JetBrains Mono',
-                          fontWeight: 'bold'
-                        }}
+                        label={(props) => (
+                          <text x={props.viewBox.x + props.viewBox.width} y={props.viewBox.y} dy={-12} textAnchor="end" fill="#60a5fa" fontSize={10} fontWeight="bold" fontFamily="JetBrains Mono" style={{ paintOrder: 'stroke', stroke: '#0d1117', strokeWidth: '3px', strokeLinejoin: 'round' }}>
+                            {!swapAxes ? Math.round(originalStudent.sat) : originalStudent.gpa.toFixed(2)}
+                          </text>
+                        )}
                       />
                     </>
                   )}
@@ -853,10 +861,10 @@ const App = () => {
                         { key: 'isResident', label: t.resident, isBool: true }
                       ].map((btn) => {
                         const isDirty = cfProfile[btn.key] !== originalStudent[btn.key];
-                        let colorClass = 'bg-slate-800/40 border-slate-700/30 text-slate-500';
+                        let colorClass = 'bg-slate-800/40 border-slate-700/30 text-slate-300';
                         if (isDirty) {
                           const isGain = cfProfile[btn.key] === true || (btn.isGender && cfProfile.gender === 'Female');
-                          colorClass = isGain ? 'bg-emerald-600/20 border-emerald-500/50 text-emerald-400 shadow-lg shadow-emerald-500/10' : 'bg-rose-600/20 border-rose-500/50 text-rose-400 shadow-lg shadow-rose-500/10';
+                          colorClass = isGain ? 'bg-emerald-600/20 border-emerald-500/50 text-white shadow-lg shadow-emerald-500/10' : 'bg-rose-600/20 border-rose-500/50 text-white shadow-lg shadow-rose-500/10';
                         }
                         return (
                           <button key={btn.key} onClick={() => btn.isGender ? handleCfChange('gender', cfProfile.gender === 'Male' ? 'Female' : 'Male') : handleCfChange(btn.key, !cfProfile[btn.key])}
