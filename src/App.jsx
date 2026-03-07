@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 /**
- * AI/ML Ethics Lab - V2.3
+ * AI/ML Ethics Lab - V2.4
  */
 
 const DEFAULT_WEIGHTS = { gpa: 25, sat: 25, athlete: 20, firstGen: 10, gender: 10, resident: 10 };
@@ -487,11 +487,11 @@ const App = () => {
             <div className="absolute inset-0 bg-amber-500/20 blur-lg rounded-full"></div>
             <Telescope className="w-7 h-7 text-amber-500 relative z-10 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col w-fit">
             <h1 className="text-lg font-black text-white uppercase tracking-[0.15em] leading-none">{t.title}</h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[10px] text-amber-500/80 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
-              <span className="text-[10px] text-slate-400 font-bold border-l border-slate-800 pl-2 uppercase tracking-widest leading-none">V2.3</span>
+            <div className="flex items-center justify-between mt-1 w-full">
+              <span className="text-[9px] text-amber-500/70 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
+              <span className="text-[9px] text-slate-500 font-bold border-l border-white/10 pl-2 uppercase tracking-widest leading-none">V2.4</span>
             </div>
           </div>
         </div>
