@@ -445,3 +445,185 @@ input[type=range]::-moz-range-track {
 .animate-soft-breath {
     animation: soft-breath 3s ease-in-out infinite;
 }
+
+/* ===== TUTORIAL SYSTEM ===== */
+
+/* Spotlight overlay: covers entire screen, punch-hole via box-shadow */
+.tutorial-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.tutorial-overlay.active {
+    pointer-events: auto;
+}
+
+/* Dark backdrop behind the spotlight */
+.tutorial-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 100;
+    transition: opacity 0.4s ease;
+}
+
+/* Spotlight ring around the target */
+.tutorial-spotlight {
+    position: fixed;
+    border-radius: 16px;
+    box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.78),
+        0 0 30px 4px rgba(59, 130, 246, 0.35);
+    z-index: 101;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+/* Tooltip card */
+.tutorial-tooltip {
+    position: fixed;
+    z-index: 102;
+    max-width: 380px;
+    min-width: 280px;
+    background: linear-gradient(145deg, #1a1f2e, #161b22);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(59, 130, 246, 0.15);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: tooltip-enter 0.4s ease-out;
+}
+
+@keyframes tooltip-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.96);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Arrow pointing to spotlight target */
+.tutorial-tooltip::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(145deg, #1a1f2e, #161b22);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    transform: rotate(45deg);
+}
+
+.tutorial-tooltip.arrow-top::before {
+    top: -7px;
+    left: 30px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.tutorial-tooltip.arrow-bottom::before {
+    bottom: -7px;
+    left: 30px;
+    border-left: none;
+    border-top: none;
+}
+
+.tutorial-tooltip.arrow-left::before {
+    left: -7px;
+    top: 24px;
+    border-top: none;
+    border-right: none;
+}
+
+.tutorial-tooltip.arrow-right::before {
+    right: -7px;
+    top: 24px;
+    border-bottom: none;
+    border-left: none;
+}
+
+/* Step indicator dots */
+.tutorial-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.tutorial-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.tutorial-dot.active {
+    background: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    width: 18px;
+    border-radius: 4px;
+}
+
+.tutorial-dot.done {
+    background: #10b981;
+}
+
+/* Pulse animation for the tutorial trigger button */
+@keyframes tutorial-pulse-ring {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5),
+            0 0 0 0 rgba(59, 130, 246, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(59, 130, 246, 0),
+            0 0 0 12px rgba(59, 130, 246, 0);
+    }
+}
+
+.tutorial-btn-pulse {
+    animation: tutorial-pulse-ring 2.5s ease-in-out infinite;
+}
+
+/* Welcome screen */
+.tutorial-welcome {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    animation: fade-in 0.4s ease;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.tutorial-welcome-card {
+    background: linear-gradient(145deg, #1a1f2e, #161b22);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 440px;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(59, 130, 246, 0.1);
+    animation: tooltip-enter 0.5s ease-out;
+}

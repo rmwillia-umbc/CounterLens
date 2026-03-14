@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import './index.css';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -85,6 +85,28 @@ const TRANSLATIONS = {
     inspectorWiki: "https://en.wikipedia.org/wiki/Feature_selection",
     inspectorExplainer: "The Inspector allows you to examine a specific data point's attributes and see how they contribute to the final decision. It provides granular detail for individual audit.",
     editorWiki: "https://en.wikipedia.org/wiki/Counterfactual_conditional",
+    tutorialBtn: "GUIDE",
+    tutorialWelcomeTitle: "Welcome to CounterLens",
+    tutorialWelcomeDesc: "A guided tour will walk you through every module step by step. Ready to explore?",
+    tutorialStart: "Start Tour",
+    tutorialSkip: "Skip",
+    tutorialNext: "Next",
+    tutorialPrev: "Back",
+    tutorialDone: "Finish",
+    tutorialStep: "Step",
+    tutorialOf: "of",
+    tutorialStepParams: "Parameters Panel",
+    tutorialDescParams: "This is your control center. Adjust the admission threshold and feature weights here to see how policy changes reshape decisions in real time.",
+    tutorialStepScenarios: "Demo Scenarios",
+    tutorialDescScenarios: "One-click presets that load curated policy configurations — from pure academic merit to diversity-focused — so you can instantly explore different strategic philosophies.",
+    tutorialStepThreshold: "Threshold Gateway",
+    tutorialDescThreshold: "The threshold is the admission cutline. Slide it to raise or lower the bar. Watch the scatter chart update live as students cross the boundary.",
+    tutorialStepViz: "Counterfactual Visualizer",
+    tutorialDescViz: "Each dot is a student. Green = admitted, red = rejected. Click any dot to select it and see its profile. The blue dashed line marks the decision boundary.",
+    tutorialStepEditor: "Counterfactual Editor",
+    tutorialDescEditor: "After selecting a student, use this panel to ask 'what if?' — tweak GPA, SAT, or identity attributes to see if and how the admission result flips.",
+    tutorialStepConfusion: "Confusion Matrix",
+    tutorialDescConfusion: "Compares the model's decisions against hidden ground truth. Click any cell (TP, FP, FN, TN) to filter the scatter chart and spotlight those specific cases.",
     editorExplainer: "The Editor enables you to manipulate features to see 'what if' the inputs were different. This helps in understanding the model's decision boundaries and sensitivity."
   },
   zh: {
@@ -140,7 +162,29 @@ const TRANSLATIONS = {
     inspectorWiki: "https://zh.wikipedia.org/wiki/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9",
     inspectorExplainer: "特征审查面板允许你深入检查特定数据点的各项属性，并观察它们如何共同决定最终的录取逻辑。这是对个体判定的精确审计。",
     editorWiki: "https://zh.wikipedia.org/wiki/%E5%8F%8D%E4%BA%8B%E5%AE%9E%E6%9D%A1%E4%BB%B6",
-    editorExplainer: "反事实编辑器允许你模拟改变输入特征，观察'如果当初不同'会如何影响判定。这能帮助你理解模型判定的敏感度和界限。"
+    editorExplainer: "反事实编辑器允许你模拟改变输入特征，观察'如果当初不同'会如何影响判定。这能帮助你理解模型判定的敏感度和界限。",
+    tutorialBtn: "引导",
+    tutorialWelcomeTitle: "欢迎使用 CounterLens",
+    tutorialWelcomeDesc: "引导教程将一步步带你了解每个模块的功能。准备好开始探索了吗？",
+    tutorialStart: "开始引导",
+    tutorialSkip: "跳过",
+    tutorialNext: "下一步",
+    tutorialPrev: "上一步",
+    tutorialDone: "完成",
+    tutorialStep: "第",
+    tutorialOf: "步，共",
+    tutorialStepParams: "参数控制面板",
+    tutorialDescParams: "这是你的控制中心。在这里可以调节录取门槛和各项特征权重，实时观察政策变化如何影响判定结果。",
+    tutorialStepScenarios: "演示预设方案",
+    tutorialDescScenarios: "一键加载预设的策略配置 — 从纯学术优先到多样化与公平 — 让你立刻体验不同的政策理念。",
+    tutorialStepThreshold: "录取门槛",
+    tutorialDescThreshold: "门槛就是录取分数线。拖动滑动条来调高或降低标准，同时观察散点图中学生是否跨越分界线。",
+    tutorialStepViz: "反事实可视化",
+    tutorialDescViz: "每个点代表一名学生。绿色 = 录取，红色 = 拒绝。点击任一样本点可选中它并查看档案。蓝色虚线标记录取分界线。",
+    tutorialStepEditor: "反事实编辑器",
+    tutorialDescEditor: "选中一名学生后，用这个面板来做'如果…会怎样？'的实验 — 调整 GPA、SAT 或身份属性，看录取结果是否反转。",
+    tutorialStepConfusion: "混淆矩阵",
+    tutorialDescConfusion: "将模型判定与隐藏的真实潜质对比。点击任一单元格（TP、FP、FN、TN）可在散点图中筛选出对应的样本。"
   },
   es: {
     scenarios: "Escenarios de Demostración",
@@ -186,7 +230,29 @@ const TRANSLATIONS = {
     thresholdExplainer: "El umbral es el punto de corte. El puntaje se calcula sumando atributos por sus pesos.",
     confusionExplainer: "Compara decisiones con el potencial real. Identifica aciertos y errores injustos.",
     learnMore: "Wikipedia",
-    axisSwap: "Cambiar Ejes"
+    axisSwap: "Cambiar Ejes",
+    tutorialBtn: "GUÍA",
+    tutorialWelcomeTitle: "Bienvenido a CounterLens",
+    tutorialWelcomeDesc: "Una visita guiada le mostrará cada módulo paso a paso. ¿Listo para explorar?",
+    tutorialStart: "Iniciar",
+    tutorialSkip: "Saltar",
+    tutorialNext: "Siguiente",
+    tutorialPrev: "Anterior",
+    tutorialDone: "Finalizar",
+    tutorialStep: "Paso",
+    tutorialOf: "de",
+    tutorialStepParams: "Panel de Parámetros",
+    tutorialDescParams: "Este es tu centro de control. Ajusta el umbral de admisión y los pesos de las características.",
+    tutorialStepScenarios: "Escenarios Demo",
+    tutorialDescScenarios: "Presets que cargan configuraciones de políticas curadas para explorar filosofías estratégicas.",
+    tutorialStepThreshold: "Umbral de Decisión",
+    tutorialDescThreshold: "El umbral es la línea de corte. Desliza para subir o bajar el estándar.",
+    tutorialStepViz: "Visualizador",
+    tutorialDescViz: "Cada punto es un estudiante. Verde = admitido, rojo = rechazado. Haz clic para seleccionar.",
+    tutorialStepEditor: "Editor Contrafactual",
+    tutorialDescEditor: "Después de seleccionar un estudiante, modifica atributos para ver si cambia el resultado.",
+    tutorialStepConfusion: "Matriz de Confusión",
+    tutorialDescConfusion: "Compara las decisiones del modelo con la verdad real. Haz clic en celdas para filtrar."
   }
 };
 
@@ -224,6 +290,75 @@ const App = () => {
   const [swapAxes, setSwapAxes] = useState(false);
   const [filterMode, setFilterMode] = useState(null); // { type: 'confusion'|'slice', value: string }
   const [isMining, setIsMining] = useState(false);
+
+  // Tutorial system
+  const [tutorialStep, setTutorialStep] = useState(-1); // -1 = off, 0 = welcome, 1..N = steps
+  const [tutorialRect, setTutorialRect] = useState(null);
+  const refParams = useRef(null);
+  const refScenarios = useRef(null);
+  const refThreshold = useRef(null);
+  const refViz = useRef(null);
+  const refEditor = useRef(null);
+  const refConfusion = useRef(null);
+
+  const TUTORIAL_STEPS = useMemo(() => [
+    { ref: refParams,    title: t.tutorialStepParams,    desc: t.tutorialDescParams,    arrow: 'right', offsetX: 16, offsetY: 0 },
+    { ref: refScenarios,  title: t.tutorialStepScenarios,  desc: t.tutorialDescScenarios,  arrow: 'right', offsetX: 16, offsetY: 0 },
+    { ref: refThreshold,  title: t.tutorialStepThreshold,  desc: t.tutorialDescThreshold,  arrow: 'right', offsetX: 16, offsetY: 0 },
+    { ref: refViz,        title: t.tutorialStepViz,        desc: t.tutorialDescViz,        arrow: 'bottom', offsetX: 0, offsetY: 16 },
+    { ref: refEditor,     title: t.tutorialStepEditor,     desc: t.tutorialDescEditor,     arrow: 'left', offsetX: -16, offsetY: 0 },
+    { ref: refConfusion,  title: t.tutorialStepConfusion,  desc: t.tutorialDescConfusion,  arrow: 'left', offsetX: -16, offsetY: 0 },
+  ], [t]);
+
+  // Measure target element position for spotlight
+  useEffect(() => {
+    if (tutorialStep < 1 || tutorialStep > TUTORIAL_STEPS.length) {
+      setTutorialRect(null);
+      return;
+    }
+    const step = TUTORIAL_STEPS[tutorialStep - 1];
+    const el = step.ref.current;
+    if (!el) { setTutorialRect(null); return; }
+    const pad = 8;
+    const r = el.getBoundingClientRect();
+    setTutorialRect({
+      top: r.top - pad,
+      left: r.left - pad,
+      width: r.width + pad * 2,
+      height: r.height + pad * 2,
+    });
+  }, [tutorialStep, TUTORIAL_STEPS]);
+
+  const tutorialTooltipStyle = useMemo(() => {
+    if (!tutorialRect || tutorialStep < 1 || tutorialStep > TUTORIAL_STEPS.length) return {};
+    const step = TUTORIAL_STEPS[tutorialStep - 1];
+    const style = {};
+    if (step.arrow === 'right') {
+      style.left = tutorialRect.left + tutorialRect.width + step.offsetX;
+      style.top = tutorialRect.top + 12;
+    } else if (step.arrow === 'left') {
+      style.right = window.innerWidth - tutorialRect.left + Math.abs(step.offsetX);
+      style.top = tutorialRect.top + 12;
+    } else if (step.arrow === 'bottom') {
+      style.left = tutorialRect.left + 12;
+      style.top = tutorialRect.top + tutorialRect.height + step.offsetY;
+    } else if (step.arrow === 'top') {
+      style.left = tutorialRect.left + 12;
+      style.bottom = window.innerHeight - tutorialRect.top + Math.abs(step.offsetY);
+    }
+    return style;
+  }, [tutorialRect, tutorialStep, TUTORIAL_STEPS]);
+
+  const arrowClass = useMemo(() => {
+    if (tutorialStep < 1 || tutorialStep > TUTORIAL_STEPS.length) return '';
+    const dir = TUTORIAL_STEPS[tutorialStep - 1].arrow;
+    // Arrow on tooltip points TOWARD the target, so opposite side
+    if (dir === 'right') return 'arrow-left';
+    if (dir === 'left') return 'arrow-right';
+    if (dir === 'bottom') return 'arrow-top';
+    if (dir === 'top') return 'arrow-bottom';
+    return '';
+  }, [tutorialStep, TUTORIAL_STEPS]);
   const [glassMode, setGlassMode] = useState(true);
 
   const originalStudent = useMemo(() => data.find(s => s.id === selectedId) || null, [data, selectedId]);
@@ -525,6 +660,13 @@ const App = () => {
         </div>
         <div className="flex items-center gap-3">
           <button
+            onClick={() => setTutorialStep(0)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase transition-all duration-300 btn-tactile tutorial-btn-pulse ${glassMode ? 'bg-blue-500/20 text-blue-300 border border-blue-400/40 backdrop-blur-md shadow-lg hover:bg-blue-500/30' : 'bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:bg-blue-600/30'}`}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            {t.tutorialBtn}
+          </button>
+          <button
             onClick={() => setGlassMode(!glassMode)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase transition-all duration-300 btn-tactile ${glassMode ? 'bg-white/10 text-white border border-white/20 backdrop-blur-md shadow-lg' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-indigo-400'}`}
           >
@@ -554,7 +696,7 @@ const App = () => {
 
         {/* LEFT Column (20%) */}
         <section className="flex flex-col gap-3 min-h-0">
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 flex-1 flex flex-col gap-4 shadow-xl aurora-border overflow-hidden">
+          <div ref={refParams} className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 flex-1 flex flex-col gap-4 shadow-xl aurora-border overflow-hidden">
             <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-4 flex-shrink-0">
               <h2 className="text-sm font-black uppercase text-white tracking-[0.15em] flex items-center gap-3">
                 <div className="p-1.5 bg-blue-500/20 rounded-lg border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
@@ -567,7 +709,7 @@ const App = () => {
 
             <div className="flex-1 flex flex-col gap-4 overflow-hidden">
               {/* Scenarios: Demo Presets */}
-              <div className="bg-blue-500/[0.03] border border-blue-500/10 rounded-xl p-3 relative overflow-hidden group">
+              <div ref={refScenarios} className="bg-blue-500/[0.03] border border-blue-500/10 rounded-xl p-3 relative overflow-hidden group">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500/40 opacity-50 group-hover:opacity-100 transition-opacity"></div>
                 <div className="space-y-2 relative z-10">
                   <div className="flex items-center gap-1.5 text-xs font-black text-blue-400 uppercase tracking-widest mb-0.5">
@@ -593,7 +735,7 @@ const App = () => {
               </div>
 
               {/* Threshold: The Decision Gateway (Emphasized) */}
-              <div className="bg-rose-500/[0.03] border border-rose-500/10 rounded-xl p-3 relative overflow-hidden group">
+              <div ref={refThreshold} className="bg-rose-500/[0.03] border border-rose-500/10 rounded-xl p-3 relative overflow-hidden group">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500/40"></div>
                 <div className="space-y-2 relative z-10">
                   <div className="flex justify-between items-start">
@@ -645,7 +787,7 @@ const App = () => {
 
         {/* MIDDLE Column (60%) */}
         <section className="flex flex-col gap-3 min-h-0 overflow-hidden">
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[69%] relative shadow-inner aurora-border">
+          <div ref={refViz} className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[69%] relative shadow-inner aurora-border">
             <div className="flex flex-col mb-1">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -847,7 +989,7 @@ const App = () => {
         </section>
         <section className="flex flex-col gap-3 min-h-0 overflow-hidden">
           {/* COUNTERFACTUAL EDITOR (Now in Right Column) */}
-          <div className={`bg-[#161b22] border-2 border-blue-500/30 rounded-2xl overflow-hidden flex flex-col h-[69%] shadow-xl aurora-border min-h-0 ${glassMode ? 'glass-card border-none' : ''}`}>
+          <div ref={refEditor} className={`bg-[#161b22] border-2 border-blue-500/30 rounded-2xl overflow-hidden flex flex-col h-[69%] shadow-xl aurora-border min-h-0 ${glassMode ? 'glass-card border-none' : ''}`}>
             <div className="p-4 flex flex-col min-h-0 h-full overflow-hidden bg-blue-500/[0.03]">
               <div className="flex items-center justify-between border-b border-blue-500/30 pb-3 mb-1 flex-shrink-0">
                 <div className="flex items-center gap-3">
@@ -983,7 +1125,7 @@ const App = () => {
             </div>
           </div>
 
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[31%] flex flex-col gap-4 shadow-xl aurora-border overflow-hidden">
+          <div ref={refConfusion} className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[31%] flex flex-col gap-4 shadow-xl aurora-border overflow-hidden">
             <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-2">
               <p className="text-sm font-black text-white uppercase tracking-[0.15em] leading-none flex items-center gap-3">
                 <div className="p-1.5 bg-emerald-500/20 rounded-lg border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
@@ -1021,6 +1163,92 @@ const App = () => {
         </section>
 
       </div>
+
+      {/* ===== TUTORIAL OVERLAY ===== */}
+      {tutorialStep === 0 && (
+        <div className="tutorial-welcome" onClick={() => setTutorialStep(-1)}>
+          <div className="tutorial-welcome-card" onClick={(e) => e.stopPropagation()}>
+            <div className="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-blue-500/30">
+              <BookOpen className="w-8 h-8 text-blue-400" />
+            </div>
+            <h2 className="text-xl font-black text-white uppercase tracking-wider mb-2">{t.tutorialWelcomeTitle}</h2>
+            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-6">{t.tutorialWelcomeDesc}</p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => setTutorialStep(-1)} className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-black uppercase transition-all border border-slate-700">{t.tutorialSkip}</button>
+              <button onClick={() => setTutorialStep(1)} className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase transition-all shadow-lg shadow-blue-500/25">{t.tutorialStart}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tutorialStep >= 1 && tutorialStep <= TUTORIAL_STEPS.length && tutorialRect && (
+        <>
+          {/* Spotlight cutout */}
+          <div
+            className="tutorial-spotlight"
+            style={{
+              top: tutorialRect.top,
+              left: tutorialRect.left,
+              width: tutorialRect.width,
+              height: tutorialRect.height,
+            }}
+            onClick={() => setTutorialStep(-1)}
+          />
+
+          {/* Tooltip */}
+          <div
+            className={`tutorial-tooltip ${arrowClass}`}
+            style={tutorialTooltipStyle}
+            key={tutorialStep}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+              </div>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                {lang === 'zh' ? `${t.tutorialStep} ${tutorialStep} ${t.tutorialOf} ${TUTORIAL_STEPS.length} 步` : `${t.tutorialStep} ${tutorialStep} ${t.tutorialOf} ${TUTORIAL_STEPS.length}`}
+              </span>
+            </div>
+            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-1.5">
+              {TUTORIAL_STEPS[tutorialStep - 1].title}
+            </h3>
+            <p className="text-xs text-slate-400 font-medium leading-relaxed mb-4">
+              {TUTORIAL_STEPS[tutorialStep - 1].desc}
+            </p>
+
+            {/* Bottom bar: dots + nav */}
+            <div className="flex items-center justify-between">
+              <div className="tutorial-dots">
+                {TUTORIAL_STEPS.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`tutorial-dot ${i + 1 === tutorialStep ? 'active' : ''} ${i + 1 < tutorialStep ? 'done' : ''}`}
+                  />
+                ))}
+              </div>
+              <div className="flex gap-2">
+                {tutorialStep > 1 && (
+                  <button
+                    onClick={() => setTutorialStep(s => s - 1)}
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-black uppercase transition-all border border-slate-700"
+                  >{t.tutorialPrev}</button>
+                )}
+                {tutorialStep < TUTORIAL_STEPS.length ? (
+                  <button
+                    onClick={() => setTutorialStep(s => s + 1)}
+                    className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-black uppercase transition-all shadow-lg shadow-blue-500/25"
+                  >{t.tutorialNext}</button>
+                ) : (
+                  <button
+                    onClick={() => setTutorialStep(-1)}
+                    className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase transition-all shadow-lg shadow-emerald-500/25"
+                  >{t.tutorialDone}</button>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
