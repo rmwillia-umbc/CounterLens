@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 /**
- * AI/ML Ethics Lab - V2.4
+ * AI/ML Ethics Lab - V2.5
  */
 
 const DEFAULT_WEIGHTS = { gpa: 25, sat: 25, athlete: 20, firstGen: 10, gender: 10, resident: 10 };
@@ -73,18 +73,20 @@ const TRANSLATIONS = {
     fateDelta: "Fate Flip Detected",
     thresholdWiki: "https://en.wikipedia.org/wiki/Threshold",
     confusionWiki: "https://en.wikipedia.org/wiki/Confusion_matrix",
-    thresholdExplainer: "The threshold is the policy cutoff. A student's score is a weighted sum of attributes. Adjusting this represents changing admission standards.",
-    confusionExplainer: "Compares decisions with 'hidden potential'. identifies successes and failures like 'False Negatives' (unfairly rejected).",
+    thresholdExplainer: "HOW SCORING WORKS: Each student gets a score from 0 to 100. The score is calculated by adding up weighted contributions from each feature:\n\n\u2022 GPA is scaled from 2.5\u20134.0 to 0\u2013100, then multiplied by its weight. Example: If GPA = 3.5 and GPA weight = 25%, the GPA contribution = ((3.5\u22122.5)/1.5) \u00d7 25 \u2248 16.7 points.\n\u2022 SAT is scaled from 1200\u20131600 to 0\u2013100, then multiplied by its weight.\n\u2022 Boolean features (Athlete, 1st-Gen, Female, Resident) add their full weight if YES, or 0 if NO. Example: If Athlete weight = 20% and the student IS an athlete, it adds 20 points.\n\nThe THRESHOLD is the cutoff line: Score \u2265 Threshold \u2192 Admitted. Score < Threshold \u2192 Rejected. Raising the threshold makes admission harder.",
+    confusionExplainer: "The confusion matrix compares what the model decided vs. what the 'hidden truth' says about each student:\n\n\u2022 TP (True Positive): Model says ADMIT, and the student truly has potential \u2192 Correct!\n\u2022 FP (False Positive): Model says ADMIT, but student lacks potential \u2192 Wrongly admitted.\n\u2022 FN (False Negative): Model says REJECT, but student has potential \u2192 Unfairly rejected! This is the most concerning case for fairness.\n\u2022 TN (True Negative): Model says REJECT, and student lacks potential \u2192 Correct.\n\nClick any cell to highlight those students in the scatter chart.",
     learnMore: "Wikipedia",
     axisSwap: "Swap Axes",
     margin: "Decision Margin (L2)",
     marginWiki: "https://en.wikipedia.org/wiki/Euclidean_distance",
     marginExplainer: "The Decision Margin (L2) represents the shortest distance from a student's profile to the admission boundary in a normalized feature space. A smaller margin indicates a 'fragile' decision where minor profile changes could flip the result.",
     weightsWiki: "https://en.wikipedia.org/wiki/Coefficient",
-    weightsExplainer: "Weights define the relative importance of each feature. A high GPA weight means the model prioritizes academic history over other attributes like SAT or residency.",
+    weightsExplainer: "Weights control how much each feature matters in the final score. Think of it as grading a student on a 100-point scale:\n\n\u2022 If GPA weight = 25%, then GPA can contribute up to 25 points.\n\u2022 If Athlete weight = 20%, being an athlete adds a flat 20 points.\n\u2022 All weights should add up to 100% for scores to make intuitive sense (check the \u03a3 indicator).\n\nTry it: Set GPA to 100% and everything else to 0% \u2014 now only GPA determines admission!",
     inspectorWiki: "https://en.wikipedia.org/wiki/Feature_selection",
     inspectorExplainer: "The Inspector allows you to examine a specific data point's attributes and see how they contribute to the final decision. It provides granular detail for individual audit.",
     editorWiki: "https://en.wikipedia.org/wiki/Counterfactual_conditional",
+    slicesExplainer: "This panel shows how each demographic group is distributed across the admission scoring scale (0-100).\n\nHOW TO READ:\n\u2022 Each row = one group (e.g., Athletes, Female, 1st-Gen). A student can belong to multiple groups.\n\u2022 The mini histogram shows how many students in that group fall at each score level.\n\u2022 Green bars = students above the threshold (Admitted). Red bars = below threshold (Rejected).\n\u2022 The red dotted line (\u25bc) marks the current threshold.\n\u2022 Click a row to filter the scatter chart to only show that group.\n\nThis helps you quickly spot fairness issues: if one group has mostly red bars while another has mostly green, the model may be biased.",
+    marginExplainerNew: "Decision Margin measures how \u2018safe\u2019 a student's admission decision is.\n\nThink of it as: How far is this student from the pass/fail line?\n\u2022 Large margin = the decision is solid and won't easily change.\n\u2022 Small margin = the student is right on the edge. A tiny change in GPA or SAT could flip the result.\n\nThe number shown is the L2 (Euclidean) distance to the decision boundary. The arrow (\u2191/\u2193) shows whether your counterfactual edit moved the student further from or closer to the boundary.",
     tutorialBtn: "GUIDE",
     tutorialWelcomeTitle: "Welcome to CounterLens",
     tutorialWelcomeDesc: "A guided tour will walk you through every module step by step. Ready to explore?",
@@ -107,7 +109,13 @@ const TRANSLATIONS = {
     tutorialDescEditor: "After selecting a student, use this panel to ask 'what if?' — tweak GPA, SAT, or identity attributes to see if and how the admission result flips.",
     tutorialStepConfusion: "Confusion Matrix",
     tutorialDescConfusion: "Compares the model's decisions against hidden ground truth. Click any cell (TP, FP, FN, TN) to filter the scatter chart and spotlight those specific cases.",
-    editorExplainer: "The Editor enables you to manipulate features to see 'what if' the inputs were different. This helps in understanding the model's decision boundaries and sensitivity."
+    editorExplainer: "The Editor enables you to manipulate features to see 'what if' the inputs were different. This helps in understanding the model's decision boundaries and sensitivity.",
+    dataStats: "Data Statistics",
+    numericFeatures: "Numeric Features",
+    categoricalFeatures: "Categorical Features",
+    statCount: "count", statMean: "mean", statStd: "std", statMin: "min", statMax: "max",
+    statUnique: "unique", statTop: "top", statFreq: "freq",
+    admitRate: "Admit Rate"
   },
   zh: {
     scenarios: "演示预设方案",
@@ -150,19 +158,21 @@ const TRANSLATIONS = {
     fateDelta: "检测到命运反转",
     thresholdWiki: "https://zh.wikipedia.org/wiki/%E9%98%88%E5%80%BC",
     confusionWiki: "https://zh.wikipedia.org/wiki/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5",
-    thresholdExplainer: "录取门槛是及格线。系统计算加权总分，达到门槛则录取。调高门槛代表录取标准变严。",
-    confusionExplainer: "混淆矩阵对比判定结果与真实潜质。它揭示了误判录取（错误选拔）和误判拒绝（排斥人才）。",
+    thresholdExplainer: "评分机制：系统会根据权重，为每位学生计算一个 0–100 的综合分数。\n\n• GPA：将 GPA（2.5~4.0）换算成百分制，再乘以权重。举例：GPA=3.5，权重=25%，贡献 = ((3.5-2.5)/1.5) × 25 ≈ 16.7 分。\n• SAT：同理，将 SAT（1200~1600）换算后乘以权重。\n• 布尔特征（运动员、一代生等）：是则加对应权重值，否则加 0。\n\n录取门槛就是分数线：分数 ≥ 门槛 → 录取，分数 < 门槛 → 拒绝。提高门槛 = 更严格的录取标准。",
+    confusionExplainer: "混淆矩阵将模型的录取决定与'隐藏的真实潜力'进行对比：\n\n• TP（正确录取）：模型说录取，学生确实有潜力 → 正确！\n• FP（误判录取）：模型说录取，但学生没潜力 → 错误录取。\n• FN（误判拒绝）：模型说拒绝，但学生有潜力 → 不公平的拒绝！\n• TN（正确拒绝）：模型说拒绝，学生没潜力 → 正确。\n\n点击任意一格可以在散点图中高亮对应的学生。",
     learnMore: "维基百科",
     axisSwap: "轴向切换",
     margin: "决策余量 (L2 距离)",
     marginWiki: "https://zh.wikipedia.org/wiki/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E8%B7%9D%E7%A6%BB",
     marginExplainer: "决策余量（L2 距离）代表了学生在标准化特征空间中距离录取边界线的最短距离。余量越小，说明该判定越'脆弱'，微小的档案改动（如 SAT 波动）就可能逆转录取结果。",
     weightsWiki: "https://zh.wikipedia.org/wiki/%E7%B3%BB%E6%95%B0",
-    weightsExplainer: "权重定义了每个特征的相对重要性。设置较高的 GPA 权重意味着模型在评估时会优先考虑学术历史，而非 SAT 或身份背景等其他指标。",
+    weightsExplainer: "权重控制每个特征在最终分数中占多大比重。可以这样理解——把满分 100 分分配给各项特征：\n\n• 如果 GPA 权重 = 25%，那么 GPA 最多能贡献 25 分。\n• 如果运动员权重 = 20%，是运动员就直接加 20 分。\n• 所有权重加起来应该等于 100%（看 Σ 指示器）。\n\n试试看：把 GPA 设为 100%，其他全部设为 0% — 现在只有 GPA 决定录取！",
     inspectorWiki: "https://zh.wikipedia.org/wiki/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9",
     inspectorExplainer: "特征审查面板允许你深入检查特定数据点的各项属性，并观察它们如何共同决定最终的录取逻辑。这是对个体判定的精确审计。",
     editorWiki: "https://zh.wikipedia.org/wiki/%E5%8F%8D%E4%BA%8B%E5%AE%9E%E6%9D%A1%E4%BB%B6",
-    editorExplainer: "反事实编辑器允许你模拟改变输入特征，观察'如果当初不同'会如何影响判定。这能帮助你理解模型判定的敏感度和界限。",
+    slicesExplainer: "这个面板展示了每个人口统计分组在录取评分轴（0-100）上的分布情况。\n\n怎么看：\n• 每行 = 一个分组（如运动员、女性、一代生）。一个学生可以同时属于多个分组。\n• 迷你柱状图展示该组学生在各分数段的人数。\n• 绿色 = 超过门槛（录取），红色 = 低于门槛（拒绝）。\n• 红色虚线（▼）标记当前门槛位置。\n• 点击某行可以在散点图中筛选只显示该组。\n\n它能帮你快速发现公平性问题：如果某组大部分是红色，而另一组大部分是绿色，说明模型可能存在偏见。",
+    marginExplainerNew: "决策余量衡量的是一个学生的录取决定有多「稳固」。\n\n可以这样理解：这个学生离及格线有多远？\n• 余量大 = 决定很稳固，不容易被改变。\n• 余量小 = 学生处于边缘位置，GPA 或 SAT 的微小变化就可能翻转结果。\n\n显示的数字是 L2（欧氏）距离。箭头（↑/↓）表示你的反事实修改是让学生离边界更远还是更近。",
+    editorExplainer: "反事实编辑器让你做「如果……会怎样」的假设实验。选中一个学生后，你可以修改 TA 的 GPA、SAT 或身份属性，观察录取结果是否反转。\n\n举例：一个被拒绝的学生，如果把性别改为女性（且女性有权重加分），TA 会被录取吗？这就是「反事实分析」——帮你发现模型对不同特征的敏感度。",
     tutorialBtn: "引导",
     tutorialWelcomeTitle: "欢迎使用 CounterLens",
     tutorialWelcomeDesc: "引导教程将一步步带你了解每个模块的功能。准备好开始探索了吗？",
@@ -184,7 +194,13 @@ const TRANSLATIONS = {
     tutorialStepEditor: "反事实编辑器",
     tutorialDescEditor: "选中一名学生后，用这个面板来做'如果…会怎样？'的实验 — 调整 GPA、SAT 或身份属性，看录取结果是否反转。",
     tutorialStepConfusion: "混淆矩阵",
-    tutorialDescConfusion: "将模型判定与隐藏的真实潜质对比。点击任一单元格（TP、FP、FN、TN）可在散点图中筛选出对应的样本。"
+    tutorialDescConfusion: "将模型判定与隐藏的真实潜质对比。点击任一单元格（TP、FP、FN、TN）可在散点图中筛选出对应的样本。",
+    dataStats: "数据统计",
+    numericFeatures: "数值特征",
+    categoricalFeatures: "分类特征",
+    statCount: "总数", statMean: "均值", statStd: "标准差", statMin: "最小", statMax: "最大",
+    statUnique: "类别数", statTop: "众数", statFreq: "频率",
+    admitRate: "录取率"
   },
   es: {
     scenarios: "Escenarios de Demostración",
@@ -227,8 +243,8 @@ const TRANSLATIONS = {
     fateDelta: "Giro de Destino",
     thresholdWiki: "https://es.wikipedia.org/wiki/Umbral",
     confusionWiki: "https://es.wikipedia.org/wiki/Matriz_de_confusi%C3%B3n",
-    thresholdExplainer: "El umbral es el punto de corte. El puntaje se calcula sumando atributos por sus pesos.",
-    confusionExplainer: "Compara decisiones con el potencial real. Identifica aciertos y errores injustos.",
+    thresholdExplainer: "CÓMO FUNCIONA: Cada estudiante recibe un puntaje de 0 a 100 sumando contribuciones ponderadas:\n\n• GPA se escala de 2.5–4.0 a 0–100, multiplicado por su peso.\n• SAT se escala de 1200–1600 a 0–100, multiplicado por su peso.\n• Características booleanas (Atleta, 1ra-Gen, etc.) suman su peso si SÍ, o 0 si NO.\n\nEl UMBRAL es la línea de corte: Puntaje ≥ Umbral → Admitido. Menor → Rechazado.",
+    confusionExplainer: "La matriz compara las decisiones del modelo con la verdad oculta:\n\n• TP: Admitido correctamente.\n• FP: Admitido por error.\n• FN: Rechazado injustamente — el caso más preocupante para la equidad.\n• TN: Rechazado correctamente.\n\nHaz clic en cualquier celda para resaltar esos estudiantes.",
     learnMore: "Wikipedia",
     axisSwap: "Cambiar Ejes",
     tutorialBtn: "GUÍA",
@@ -252,7 +268,13 @@ const TRANSLATIONS = {
     tutorialStepEditor: "Editor Contrafactual",
     tutorialDescEditor: "Después de seleccionar un estudiante, modifica atributos para ver si cambia el resultado.",
     tutorialStepConfusion: "Matriz de Confusión",
-    tutorialDescConfusion: "Compara las decisiones del modelo con la verdad real. Haz clic en celdas para filtrar."
+    tutorialDescConfusion: "Compara las decisiones del modelo con la verdad real. Haz clic en celdas para filtrar.",
+    dataStats: "Estadísticas",
+    numericFeatures: "Características Numéricas",
+    categoricalFeatures: "Características Categóricas",
+    statCount: "total", statMean: "media", statStd: "desv", statMin: "mín", statMax: "máx",
+    statUnique: "únicos", statTop: "moda", statFreq: "frec",
+    admitRate: "Tasa Adm."
   }
 };
 
@@ -290,6 +312,7 @@ const App = () => {
   const [swapAxes, setSwapAxes] = useState(false);
   const [filterMode, setFilterMode] = useState(null); // { type: 'confusion'|'slice', value: string }
   const [isMining, setIsMining] = useState(false);
+  const [statsTab, setStatsTab] = useState('slices'); // 'slices' | 'stats'
 
   // Tutorial system
   const [tutorialStep, setTutorialStep] = useState(-1); // -1 = off, 0 = welcome, 1..N = steps
@@ -454,6 +477,89 @@ const App = () => {
     };
   }, [data, weights, threshold, t, lang]);
 
+  // Feature statistics for WIT-style Data Statistics panel
+  const featureStats = useMemo(() => {
+    const gpas = data.map(d => d.gpa);
+    const sats = data.map(d => d.sat);
+    const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const std = arr => { const m = mean(arr); return Math.sqrt(arr.reduce((s, v) => s + (v - m) ** 2, 0) / arr.length); };
+
+    // Build histogram bins WITH admit/reject coloring
+    const buildHist = (arr, entries, binCount, minV, maxV) => {
+      const step = (maxV - minV) / binCount;
+      const bins = Array.from({ length: binCount }, () => ({ admit: 0, reject: 0 }));
+      entries.forEach((d, idx) => {
+        const v = arr[idx];
+        const i = Math.min(binCount - 1, Math.floor((v - minV) / step));
+        if (isAdmitted(d)) bins[i].admit++; else bins[i].reject++;
+      });
+      const maxBin = Math.max(...bins.map(b => b.admit + b.reject), 1);
+      return bins.map((b, i) => ({ x: (minV + step * i).toFixed(2), admit: b.admit, reject: b.reject, total: b.admit + b.reject, pct: (b.admit + b.reject) / maxBin }));
+    };
+
+    const genderCounts = { Male: { total: 0, admit: 0 }, Female: { total: 0, admit: 0 } };
+    let athTotal = 0, athAdmit = 0, fgTotal = 0, fgAdmit = 0, resTotal = 0, resAdmit = 0;
+    let nAthTotal = 0, nAthAdmit = 0, nFgTotal = 0, nFgAdmit = 0, nResTotal = 0, nResAdmit = 0;
+    data.forEach(d => {
+      const adm = isAdmitted(d);
+      genderCounts[d.gender].total++; if (adm) genderCounts[d.gender].admit++;
+      if (d.isAthlete) { athTotal++; if (adm) athAdmit++; } else { nAthTotal++; if (adm) nAthAdmit++; }
+      if (d.isFirstGen) { fgTotal++; if (adm) fgAdmit++; } else { nFgTotal++; if (adm) nFgAdmit++; }
+      if (d.isResident) { resTotal++; if (adm) resAdmit++; } else { nResTotal++; if (adm) nResAdmit++; }
+    });
+
+    return {
+      numeric: [
+        { key: 'gpa', label: 'GPA', count: data.length, mean: mean(gpas).toFixed(2), std: std(gpas).toFixed(2), min: Math.min(...gpas).toFixed(2), max: Math.max(...gpas).toFixed(2), hist: buildHist(gpas, data, 10, 2.5, 4.0) },
+        { key: 'sat', label: 'SAT', count: data.length, mean: mean(sats).toFixed(0), std: std(sats).toFixed(0), min: Math.min(...sats), max: Math.max(...sats), hist: buildHist(sats, data, 10, 1200, 1600) },
+      ],
+      categorical: [
+        { key: 'gender', label: t.gender?.replace(/\s*\(.*\)/, '') || 'Gender', count: data.length, unique: 2, bars: [
+          { label: t.male, count: genderCounts.Male.total, admit: genderCounts.Male.admit, rate: genderCounts.Male.total ? Math.round(genderCounts.Male.admit / genderCounts.Male.total * 100) : 0 },
+          { label: t.female, count: genderCounts.Female.total, admit: genderCounts.Female.admit, rate: genderCounts.Female.total ? Math.round(genderCounts.Female.admit / genderCounts.Female.total * 100) : 0 },
+        ]},
+        { key: 'athlete', label: t.athlete, count: data.length, unique: 2, bars: [
+          { label: t.yes, count: athTotal, admit: athAdmit, rate: athTotal ? Math.round(athAdmit / athTotal * 100) : 0 },
+          { label: t.no, count: nAthTotal, admit: nAthAdmit, rate: nAthTotal ? Math.round(nAthAdmit / nAthTotal * 100) : 0 },
+        ]},
+        { key: 'firstGen', label: t.firstGen, count: data.length, unique: 2, bars: [
+          { label: t.yes, count: fgTotal, admit: fgAdmit, rate: fgTotal ? Math.round(fgAdmit / fgTotal * 100) : 0 },
+          { label: t.no, count: nFgTotal, admit: nFgAdmit, rate: nFgTotal ? Math.round(nFgAdmit / nFgTotal * 100) : 0 },
+        ]},
+        { key: 'resident', label: t.resident, count: data.length, unique: 2, bars: [
+          { label: t.yes, count: resTotal, admit: resAdmit, rate: resTotal ? Math.round(resAdmit / resTotal * 100) : 0 },
+          { label: t.no, count: nResTotal, admit: nResAdmit, rate: nResTotal ? Math.round(nResAdmit / nResTotal * 100) : 0 },
+        ]},
+      ]
+    };
+  }, [data, weights, threshold, t]);
+
+  // Per-group score distribution histograms for scented widgets
+  const sliceDistributions = useMemo(() => {
+    const BINS = 10;
+    const filters = {
+      [t.athlete]: s => s.isAthlete,
+      [t.firstGen]: s => s.isFirstGen,
+      [t.female]: s => s.gender === 'Female',
+      [t.male]: s => s.gender === 'Male',
+      [t.resident]: s => s.isResident,
+    };
+    const result = {};
+    Object.entries(filters).forEach(([name, fn]) => {
+      const members = data.filter(fn);
+      const bins = Array.from({ length: BINS }, () => ({ admit: 0, reject: 0 }));
+      members.forEach(s => {
+        const score = calcScore(s, weights);
+        const i = Math.min(BINS - 1, Math.floor((score / 100) * BINS));
+        if (score >= threshold) bins[i].admit++;
+        else bins[i].reject++;
+      });
+      const maxBin = Math.max(...bins.map(b => b.admit + b.reject), 1);
+      result[name] = bins.map(b => ({ ...b, total: b.admit + b.reject, pct: (b.admit + b.reject) / maxBin }));
+    });
+    return result;
+  }, [data, weights, threshold, t]);
+
   const trajectoryData = useMemo(() => {
     if (!originalStudent || !cfProfile) return [];
     // Ensure we provide keys matching the chart's dataKey logic
@@ -487,26 +593,17 @@ const App = () => {
     if (!p) return null;
     const s = calcScore(p, weights);
     const diff = s - threshold;
-
     const g1 = weights.gpa / 100;
     const g2 = weights.sat / 100;
     const denomNorm = g1 * g1 + g2 * g2;
-
     if (denomNorm === 0) return { margin: "0.00", projection: { gpa: p.gpa, sat: p.sat } };
-
     const dist = Math.abs(diff) / Math.sqrt(denomNorm);
-
     const A = weights.gpa / 1.5;
     const B = weights.sat / 400;
     const dRaw = A * A + B * B;
     const xp = p.gpa - (A * diff) / dRaw;
     const yp = p.sat - (B * diff) / dRaw;
-
-    return {
-      margin: dist.toFixed(2),
-      rawMargin: dist,
-      projection: { gpa: xp, sat: yp }
-    };
+    return { margin: dist.toFixed(2), rawMargin: dist, projection: { gpa: xp, sat: yp } };
   }, [weights, threshold]);
 
   const marginStats = useMemo(() => getMargin(originalStudent), [originalStudent, getMargin]);
@@ -617,16 +714,18 @@ const App = () => {
                       explainer === 'confusion' ? t.confusion :
                         explainer === 'margin' ? t.margin :
                           explainer === 'weights' ? t.weights :
-                            t.editor}
+                            explainer === 'slices' ? t.slices :
+                              t.editor}
                   </h3>
                 </div>
-                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                  <p className="text-slate-300 text-sm font-medium leading-relaxed">
+                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 max-h-[50vh] overflow-y-auto no-scrollbar">
+                  <p className="text-slate-300 text-sm font-medium leading-relaxed whitespace-pre-line">
                     {explainer === 'threshold' ? t.thresholdExplainer :
                       explainer === 'confusion' ? t.confusionExplainer :
-                        explainer === 'margin' ? t.marginExplainer :
+                        explainer === 'margin' ? t.marginExplainerNew :
                           explainer === 'weights' ? t.weightsExplainer :
-                            t.editorExplainer}
+                            explainer === 'slices' ? t.slicesExplainer :
+                              t.editorExplainer}
                   </p>
                 </div>
                 <div className="pt-2 flex justify-between items-center">
@@ -634,7 +733,8 @@ const App = () => {
                     explainer === 'confusion' ? t.confusionWiki :
                       explainer === 'margin' ? t.marginWiki :
                         explainer === 'weights' ? t.weightsWiki :
-                          t.editorWiki} target="_blank" className="flex items-center gap-2 text-xs font-bold text-blue-400 hover:underline"><ExternalLink className="w-4 h-4" /> {t.learnMore}</a>
+                          explainer === 'slices' ? '#' :
+                            t.editorWiki} target="_blank" className="flex items-center gap-2 text-xs font-bold text-blue-400 hover:underline"><ExternalLink className="w-4 h-4" /> {t.learnMore}</a>
                   <button onClick={() => setExplainer(null)} className="px-8 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-black uppercase transition-all btn-tactile btn-primary-tactile">OK</button>
                 </div>
               </div>
@@ -654,7 +754,7 @@ const App = () => {
             <h1 className="text-lg font-black text-white uppercase tracking-[0.15em] leading-none">{t.title}</h1>
             <div className="flex items-center justify-between mt-1 w-full">
               <span className="text-[9px] text-amber-500/70 font-black uppercase tracking-[0.2em] leading-none">Powered by UMBC</span>
-              <span className="text-[9px] text-slate-500 font-bold border-l border-white/10 pl-2 uppercase tracking-widest leading-none">V2.4</span>
+              <span className="text-[9px] text-slate-500 font-bold border-l border-white/10 pl-2 uppercase tracking-widest leading-none">V2.5</span>
             </div>
           </div>
         </div>
@@ -928,6 +1028,7 @@ const App = () => {
                     </Scatter>
                   )}
 
+
                   {/* Margin Shortest Path Line (Original) */}
                   {selectedId !== null && originalStudent && marginStats && (
                     <Scatter
@@ -960,30 +1061,156 @@ const App = () => {
             </div>
           </div>
 
-          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[31%] relative shadow-inner aurora-border flex flex-col gap-3">
-            <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-1 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 bg-purple-500/20 rounded-lg border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-                  <BarChart3 className="w-4 h-4 text-purple-400" />
+          <div className="bg-[#161b22] border border-slate-800 rounded-2xl glass-card p-4 h-[31%] relative shadow-inner aurora-border flex flex-col gap-2 overflow-hidden">
+            {/* Header with tabs */}
+            <div className="flex justify-between items-center border-b border-white/10 pb-2 flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="flex rounded-lg p-0.5 bg-slate-800/60 border border-white/5">
+                  <button onClick={() => setStatsTab('slices')} className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-black uppercase transition-all ${statsTab === 'slices' ? 'bg-purple-500/30 text-purple-300 border border-purple-400/40' : 'text-slate-500 hover:text-white'}`}>
+                    <BarChart3 className="w-3 h-3" /> {t.slices}
+                  </button>
+                  <button onClick={() => setStatsTab('stats')} className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-black uppercase transition-all ${statsTab === 'stats' ? 'bg-blue-500/30 text-blue-300 border border-blue-400/40' : 'text-slate-500 hover:text-white'}`}>
+                    <Database className="w-3 h-3" /> {t.dataStats}
+                  </button>
                 </div>
-                <h2 className="text-sm font-black text-white uppercase tracking-[0.15em]">{t.slices}</h2>
               </div>
-              <div className="px-2 py-0.5 rounded bg-slate-800/60 text-[10px] text-slate-400 font-mono font-black border border-white/5 uppercase">Global Pool (N={INITIAL_POOL.length})</div>
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setExplainer('slices')} className="w-5 h-5 rounded-full bg-slate-700/50 border border-white/10 flex items-center justify-center hover:bg-slate-600/80 transition-all cursor-pointer btn-tactile"><span className="text-[11px] font-black text-slate-300">?</span></button>
+                <div className="px-2 py-0.5 rounded bg-slate-800/60 text-[10px] text-slate-400 font-mono font-black border border-white/5 uppercase">N={INITIAL_POOL.length}</div>
+              </div>
             </div>
-            <div className="flex-1 min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.groupStats} margin={{ top: 25, right: 30, bottom: 5, left: 30 }} onClick={(e) => { if (e && e.activeLabel) setFilterMode(prev => (prev?.type === 'slice' && prev?.value === e.activeLabel) ? null : { type: 'slice', value: e.activeLabel }); }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#21262d" vertical={false} />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tick={{ fontFamily: 'JetBrains Mono', fontWeight: 'bold' }} interval={0} axisLine={false} />
-                  <YAxis hide domain={[0, 115]} />
-                  <Bar dataKey="rate" radius={[6, 6, 0, 0]} fill={COLORS.barDefault} isAnimationActive={false}>
-                    {stats.groupStats.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={filterMode?.type === 'slice' && filterMode?.value === entry.name ? '#3b82f6' : COLORS.barDefault} opacity={filterMode?.type === 'slice' && filterMode?.value !== entry.name ? 0.3 : 1} />
-                    ))}
-                    <LabelList dataKey="rate" position="top" content={(props) => { const { x, y, width, value, index } = props; const item = stats.groupStats[index]; return (<g className="font-mono font-black text-xs uppercase"><text x={x + width / 2} y={y - 12} textAnchor="middle" fill="#60a5fa">{value}%</text><text x={x + width / 2} y={y - 4} textAnchor="middle" fill="#475569" className="text-[9px]">({item.admitted}/{item.count})</text></g>); }} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+
+            {/* Tab Content */}
+            <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
+              {statsTab === 'slices' ? (
+                /* === SCENTED WIDGETS === */
+                <div className="space-y-0">
+                  {/* Legend + Axis header row */}
+                  <div className="px-2 pb-1.5 mb-0.5 border-b border-white/5 space-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-emerald-500/70" /><span className="text-[8px] font-bold text-slate-500 uppercase">{t.admit}</span></div>
+                      <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-rose-500/60" /><span className="text-[8px] font-bold text-slate-500 uppercase">{t.reject}</span></div>
+                      <div className="flex items-center gap-1 ml-auto"><div className="w-[1px] h-2.5 bg-rose-400/60" /><span className="text-[8px] font-bold text-slate-500 uppercase">{t.threshold}</span></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-[24px] flex-shrink-0" />
+                      <span className="w-3 flex-shrink-0" />
+                      <span className="w-[60px] flex-shrink-0 text-[8px] font-bold text-slate-600 uppercase">{lang === 'zh' ? '分组' : 'Slice'}</span>
+                      <div className="flex-1 flex items-center text-[8px] font-mono text-slate-600 relative">
+                        <span>0</span>
+                        <span className="flex-1 text-center text-[7px] text-slate-600/60 uppercase tracking-widest">{lang === 'zh' ? '← 录取分数 →' : '← Score →'}</span>
+                        <span>100</span>
+                        <span className="text-rose-400/70 absolute text-[7px]" style={{ left: `${threshold}%`, transform: 'translateX(-50%)', top: '-10px' }}>▼{threshold}</span>
+                      </div>
+                    </div>
+                  </div>
+                  {stats.groupStats.map((g) => {
+                    const isActive = filterMode?.type === 'slice' && filterMode?.value === g.name;
+                    const dist = sliceDistributions[g.name] || [];
+                    const maxBinVal = Math.max(...dist.map(b => b.admit + b.reject), 1);
+                    // Calculate threshold bin position (0-9 for 10 bins)
+                    const thresholdPos = (threshold / 100) * 100; // percentage position
+                    return (
+                      <button key={g.name} onClick={() => setFilterMode(prev => (prev?.type === 'slice' && prev?.value === g.name) ? null : { type: 'slice', value: g.name })}
+                        className={`w-full flex items-center gap-2 px-2 py-1 rounded-lg transition-all cursor-pointer ${isActive ? 'bg-blue-500/10 border border-blue-400/25' : 'hover:bg-white/[0.03] border border-transparent'}`}>
+                        <span className="text-[9px] font-mono text-slate-600 w-[24px] text-right flex-shrink-0">({g.count})</span>
+                        <div className={`w-3 h-3 rounded-[3px] border-2 flex-shrink-0 flex items-center justify-center transition-all ${isActive ? 'border-blue-400 bg-blue-500/30' : 'border-slate-600 bg-transparent'}`}>
+                          {isActive && <div className="w-1.5 h-1.5 rounded-[1px] bg-blue-400" />}
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-wider w-[60px] text-left truncate flex-shrink-0 ${isActive ? 'text-blue-300' : 'text-slate-400'}`}>{g.name}</span>
+                        {/* Visual Scent: mini histogram with threshold marker */}
+                        <div className="flex-1 flex items-end gap-[1px] h-[22px] relative">
+                          {/* Threshold marker line */}
+                          <div className="absolute top-0 bottom-0 w-[1px] bg-rose-400/50 z-10" style={{ left: `${thresholdPos}%` }} />
+                          {dist.map((bin, i) => (
+                            <div key={i} className="flex-1 flex flex-col justify-end h-full">
+                              {bin.admit > 0 && (
+                                <div style={{ height: `${(bin.admit / maxBinVal) * 100}%`, minHeight: '1px' }}
+                                  className="bg-emerald-500/70 rounded-t-[1px]" />
+                              )}
+                              {bin.reject > 0 && (
+                                <div style={{ height: `${(bin.reject / maxBinVal) * 100}%`, minHeight: '1px' }}
+                                  className="bg-rose-500/60" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* === DATA STATISTICS (WIT-style) === */
+                <div className="space-y-3">
+                  {/* Numeric Features */}
+                  <div>
+                    <div className="text-[9px] font-black text-blue-400/70 uppercase tracking-widest mb-1.5 px-1">{t.numericFeatures} ({featureStats.numeric.length})</div>
+                    <div className="space-y-1.5">
+                      {featureStats.numeric.map(f => (
+                        <div key={f.key} className="bg-slate-800/30 rounded-lg px-2.5 py-2 border border-white/[0.03]">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[11px] font-black text-slate-200 uppercase tracking-wide">{f.label}</span>
+                            <div className="flex gap-2 text-[9px] font-mono text-slate-500">
+                              <span>{t.statMean}:<span className="text-slate-300 ml-0.5">{f.mean}</span></span>
+                              <span>{t.statStd}:<span className="text-slate-300 ml-0.5">{f.std}</span></span>
+                            </div>
+                          </div>
+                          {/* Inline histogram with admit/reject coloring */}
+                          <div className="flex items-end gap-px h-5">
+                            {f.hist.map((bin, i) => {
+                              const maxBinVal = Math.max(...f.hist.map(b => b.total), 1);
+                              return (
+                                <div key={i} className="flex-1 flex flex-col justify-end h-full">
+                                  {bin.admit > 0 && (
+                                    <div className="rounded-t-sm" style={{ height: `${(bin.admit / maxBinVal) * 100}%`, minHeight: '1px', background: 'rgba(16,185,129,0.6)' }} />
+                                  )}
+                                  {bin.reject > 0 && (
+                                    <div style={{ height: `${(bin.reject / maxBinVal) * 100}%`, minHeight: '1px', background: 'rgba(239,68,68,0.45)' }} />
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="flex justify-between text-[8px] font-mono text-slate-600 mt-0.5">
+                            <span>{f.min}</span><span>{f.max}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Categorical Features */}
+                  <div>
+                    <div className="text-[9px] font-black text-purple-400/70 uppercase tracking-widest mb-1.5 px-1">{t.categoricalFeatures} ({featureStats.categorical.length})</div>
+                    <div className="space-y-1.5">
+                      {featureStats.categorical.map(f => {
+                        const maxCount = Math.max(...f.bars.map(b => b.count), 1);
+                        return (
+                          <div key={f.key} className="bg-slate-800/30 rounded-lg px-2.5 py-2 border border-white/[0.03]">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[11px] font-black text-slate-200 uppercase tracking-wide">{f.label}</span>
+                              <span className="text-[9px] font-mono text-slate-500">{t.statUnique}:<span className="text-slate-300 ml-0.5">{f.unique}</span></span>
+                            </div>
+                            <div className="space-y-1">
+                              {f.bars.map((bar, i) => (
+                                <div key={i} className="flex items-center gap-1.5">
+                                  <span className="text-[8px] font-black text-slate-500 uppercase w-[28px] truncate flex-shrink-0">{bar.label}</span>
+                                  <div className="flex-1 h-3.5 bg-slate-800/40 rounded-sm relative overflow-hidden">
+                                    {/* Admitted portion */}
+                                    <div className="absolute left-0 top-0 bottom-0 rounded-sm" style={{ width: `${(bar.admit / maxCount) * 100}%`, background: 'rgba(16,185,129,0.5)' }} />
+                                    {/* Rejected portion (stacked after admit) */}
+                                    <div className="absolute top-0 bottom-0 rounded-sm" style={{ left: `${(bar.admit / maxCount) * 100}%`, width: `${((bar.count - bar.admit) / maxCount) * 100}%`, background: 'rgba(239,68,68,0.3)' }} />
+                                  </div>
+                                  <span className="text-[9px] font-mono text-slate-500 w-[44px] text-right flex-shrink-0">{bar.rate}% <span className="text-slate-600">({bar.count})</span></span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -1075,8 +1302,11 @@ const App = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between px-3 py-2 bg-indigo-500/5 border border-indigo-500/15 rounded-xl group relative overflow-hidden">
                       <div className="flex flex-col">
-                        <span className="text-[11px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1">{t.margin}</span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-0.5">{t.margin}</span>
+                          <button onClick={() => setExplainer('margin')} className="w-3.5 h-3.5 rounded-full bg-indigo-400/20 border border-indigo-400/30 flex items-center justify-center hover:bg-indigo-400/30 transition-all cursor-pointer z-10 btn-tactile"><span className="text-[9px] font-black text-indigo-400">?</span></button>
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-[9px] text-slate-500 font-bold uppercase">ORIG: {marginStats?.margin || "0.00"}</span>
                           {cfMarginStats && (
                             <span className={`text-[10px] font-black ${Number(cfMarginStats.margin) >= Number(marginStats?.margin || 0) ? 'text-emerald-400' : 'text-rose-400'}`}>
