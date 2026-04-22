@@ -1,16 +1,50 @@
-# React + Vite
+# CounterLens
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
+![Version](https://img.shields.io/badge/version-2.5.0-blue)
 
-Currently, two official plugins are available:
+**CounterLens** is an interactive educational interface designed to help users explore dataset slices, decision margins, and algorithmic fairness through a guided counterfactual visualizer and demo scenarios.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🌍 **Live Demo:** [https://rmwillia-umbc.github.io/CounterLens/](https://rmwillia-umbc.github.io/CounterLens/)
 
-## React Compiler
+## Features
+- **Guided Tutorials:** Walkthrough systems with spotlights and tooltips to help new users understand the modules.
+- **Counterfactual Visualizer:** Educational help popups and interactive tools for exploring model behavior.
+- **Demo Scenarios:** Multi-language support (English/Chinese) for different interactive scenarios.
+- **Dataset Slices:** In-depth visual exploration tools to understand algorithmic decision margins.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Local Development
 
-## Expanding the ESLint configuration
+To run this project locally on your machine:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/rmwillia-umbc/CounterLens.git
+   cd CounterLens
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:5173`.
+
+## Deployment
+
+To deploy updates to GitHub Pages:
+```bash
+npm run deploy
+```
+*(Note: You must have 'Write' access to the repository to push the `gh-pages` branch. The live site is updated automatically from the `gh-pages` branch).*
+
+## License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** license.
+You are free to share and adapt the material, provided you give appropriate credit and **do not use the material for commercial purposes**.
+
+See the `LICENSE` file for the full text.
